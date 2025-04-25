@@ -1,12 +1,21 @@
-import React from 'react'
-import {View,Text} from 'react-native'
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+
+import PostJob from "./PostJob";
+import CompanyProfile from "./CompanyProfile";
+
+const Tab=createBottomTabNavigator();
 
 const CompanyDashboard = ({route}) => {
     console.log(route.params.uid);
   return (
-  <View>
-    Company Dashboard
-  </View>
+    <Tab.Navigator screenOptions={{
+      tabBarActiveTintColor:'blue',
+      tabBarInactiveTintColor:"gray"
+  }}>
+      <Tab.Screen name="company Profile" component={CompanyProfile}/>
+      <Tab.Screen name="Post Jobs" component={PostJob}/>
+      
+  </Tab.Navigator>
   )
 }
 

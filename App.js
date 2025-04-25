@@ -22,7 +22,7 @@ const JobSeekerStack=()=>{
   return(
 
   
-  <Stack.Navigator initialRouteName="Personal Information">
+  <Stack.Navigator initialRouteName="Login">
     <Stack.Screen name="Login" component={JobSeekerLoginScreen}/>
       <Stack.Screen name="Personal Information" component={PersonalInfoScreen} />
       <Stack.Screen name="Home" component={HomeScreen}/>
@@ -37,7 +37,7 @@ const CompanyStack=()=>{
   <Stack.Navigator initialRouteName='CompanyLogin'>
      <Stack.Screen name="CompanyLogin" component={CompanyLogin}/>
      <Stack.Screen name="CompanySignUp" component={CompanySignUp}/>
-     <Stack.Screen name='ComapanyDashboard' component={CompanyDashboard}/>
+     <Stack.Screen name='CompanyDashboard' component={CompanyDashboard}/>
 
   </Stack.Navigator>
   );
@@ -46,7 +46,7 @@ const CompanyStack=()=>{
 export default function App() {
   return (
    <NavigationContainer>
-    <Stack.Navigator initialRouteName='JobSeekerStack'>
+    <Stack.Navigator initialRouteName='Role'>
       <Stack.Screen name="Role" component={RoleSelectionScreen}/>
       <Stack.Screen name="JobSeekerStack" component={JobSeekerStack} options={{headerShown:false}}/>
       <Stack.Screen name="CompanyStack" component={CompanyStack} options={{headerShown:false}}/>

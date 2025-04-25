@@ -1,68 +1,174 @@
 import React, { useState } from 'react'
-import { SafeAreaView, Text,View,ScrollView, Pressable } from 'react-native';
+import { SafeAreaView, Text, View, ScrollView, Pressable, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { TextInput } from 'react-native-web';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Feather from 'react-native-vector-icons/Feather';
-const EducaionScreen = ({navigation,route}) => {
-    const [educationDetails, setEducationDetails] = useState([{ type: '', name: '', institute: '', percentage: '' }]);
- function handlechange(field,index,value){
-    const newEducationalDEtails=[...educationDetails];
-    newEducationalDEtails[index][field]=value;
-    setEducationDetails(newEducationalDEtails);
+import { TouchableOpacity } from 'react-native';
+const EducaionScreen = ({ navigation, route }) => {
+   const [educationDetails, setEducationDetails] = useState([{ type: '', name: '', institute: '', percentage: '' }]);
+   function handlechange(field, index, value) {
+      const newEducationalDEtails = [...educationDetails];
+      newEducationalDEtails[index][field] = value;
+      setEducationDetails(newEducationalDEtails);
 
- }
- function handleAddEduInput(){
-    setEducationDetails([...educationDetails,
-        {type: '', name: '', institute: '', percentage: ''}
-    ])
- }
- const handleNextNavigate=()=>{
-    navigation.navigate("Skills",
-       { personalData: route.params.personalData,
-        educationData:educationDetails
-       }
-    )
-     console.log(educationDetails);
-     console.log(route.params.personalData)
- }
+   }
+   function handleAddEduInput() {
+      setEducationDetails([...educationDetails,
+      { type: '', name: '', institute: '', percentage: '' }
+      ])
+   }
+   const handleNextNavigate = () => {
+      navigation.navigate("Skills",
+         {
+            personalData: route.params.personalData,
+            educationData: educationDetails
+         }
+      )
+      console.log(educationDetails);
+      console.log(route.params.personalData)
+   }
 
-  return (
-  <SafeAreaView>
-   <ScrollView>
-    {
-      educationDetails.map((edu,index)=>(
-        <View key={index}>
-          <Picker selectedValue={edu.type} 
-                onValueChange={(val=>handlechange("type",index,val))}>
-            <Picker.Item label='Select Education Type' value=""/>
-            <Picker.Item label="Diplomo" value="diplomo"/>
-            <Picker.Item label="Higher Secondary" value="hsc"/>
-            <Picker.Item label="Secondary School (SSLC)" value="sslc"/>
-            <Picker.Item label="UG Degree" value="ug_degree"/>
-            <Picker.Item label="PG Degree" value="pg_degree"/>
+   return (
+      <SafeAreaView style={styles.container}>
+         <ScrollView contentContainerStyle={styles.scrollWrapper}>
+            <Text style={styles.title}>Education Details</Text>
 
-         </Picker>
-         <TextInput placeholder='Enter Education Name' onChangeText={(val)=>handlechange("name",index,val)}/>
-         <TextInput placeholder='Enter Institute Name' onChangeText={(val)=>handlechange("institute",index,val)}/>
-         <TextInput placeholder='Enter percentage/CGPA' onChangeText={(val)=>handlechange("percentage",index,val)}/>
-        </View>
-      ))
-    }
-    <Pressable onPress={handleAddEduInput}>
-    <MaterialIcons name="add-circle" color="#000" size={24} />
+            {
+               educationDetails.map((edu, index) => (
+                  <View key={index} style={{ position: "relative" }}>
+                     <Text style={styles.subheading}>Education {index + 1}</Text>
+                     <View style={styles.pickerWrapper}>
+                        <Picker selectedValue={edu.type} style={styles.picker}
+                           onValueChange={(val => handlechange("type", index, val))}>
+                           <Picker.Item label='Select Education Type' value="" />
+                           <Picker.Item label="Diplomo" value="diplomo" />
+                           <Picker.Item label="Higher Secondary" value="hsc" />
+                           <Picker.Item label="Secondary School (SSLC)" value="sslc" />
+                           <Picker.Item label="UG Degree" value="ug_degree" />
+                           <Picker.Item label="PG Degree" value="pg_degree" />
 
-    
-    </Pressable>
+                        </Picker>
+                     </View>
 
-    <Pressable onPress={handleNextNavigate}>
-    <Feather name="arrow-right-circle" color="#000" size={24} />
-    </Pressable>
-     
-   </ScrollView>
+                     <View style={styles.inputWrapper}>
+                        <TextInput placeholder='Enter Education Name' style={styles.input} onChangeText={(val) => handlechange("name", index, val)} />
+                     </View>
+                     <View style={styles.inputWrapper}>
+                        <TextInput placeholder='Enter Institute Name' style={styles.input} onChangeText={(val) => handlechange("institute", index, val)} />
+                     </View>
+                     <View style={styles.inputWrapper}>
+                        <TextInput placeholder='Enter percentage/CGPA' style={styles.input} onChangeText={(val) => handlechange("percentage", index, val)} />
+                     </View>
+                  </View>
+               ))
+            }
+            <View style={styles.addContainer}>
+               <Text>Add Education</Text>
+               <Pressable onPress={handleAddEduInput}>
+                  <MaterialIcons name="add-circle" color="#1967d2" size={24} />
 
-  </SafeAreaView>
-  )
+
+               </Pressable>
+
+            </View>
+
+
+            <TouchableOpacity style={styles.button} onPress={handleNextNavigate}>
+               <Text style={styles.buttonText}>Continue</Text>
+            </TouchableOpacity>
+
+         </ScrollView>
+
+      </SafeAreaView>
+   )
 }
 
 export default EducaionScreen
+
+const styles = StyleSheet.create({
+   container: {
+      flex: 1,
+      backgroundColor: "#fff",
+   },
+   scrollWrapper: {
+      padding: 20,
+   },
+   title: {
+      fontSize: 20,
+      fontWeight: "600",
+      textAlign: "center",
+      marginVertical: 20,
+   },
+   inputWrapper: {
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: "#f4f4f4",
+      borderRadius: 12,
+      paddingHorizontal: 12,
+      marginBottom: 15,
+      elevation: 1,
+   },
+   icon: {
+      marginRight: 8,
+
+   },
+
+   input: {
+      flex: 1,
+      paddingVertical: 12,
+      fontSize: 14,
+      borderWidth: 0,
+   },
+   pickerWrapper: {
+      flexDirection: "row",
+      alignItems: "center",
+      backgroundColor: "#f4f4f4",
+      borderRadius: 12,
+      paddingHorizontal: 12,
+      marginBottom: 20,
+      elevation: 1,
+
+   },
+   picker: {
+      flex: 1,
+      height: 50,
+      backgroundColor: "#f4f4f4",
+      border: "none",
+   },
+   button: {
+      backgroundColor: "#1967d2",
+      borderRadius: 20,
+      paddingVertical: 14,
+      alignItems: "center",
+      marginTop: 20,
+      elevation: 3,
+      shadowColor: "blue",
+      shadowOffset: {
+         width: 0,
+         height: 2,
+      },
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
+
+      elevation: 5,
+   },
+   buttonText: {
+      color: "#fff",
+      fontWeight: "bold",
+      fontSize: 16,
+   },
+   addContainer: {
+      flexDirection: 'row',
+      gap: 10,
+      justifyContent:'flex-end'
+
+   },
+   subheading:{
+      fontWeight:"bold",
+      marginVertical:10,
+      fontSize:15,
+      marginLeft:12
+   }
+
+})

@@ -137,11 +137,14 @@ const styles = StyleSheet.create({
   },
   icon: {
     marginRight: 8,
+   
   },
+
   input: {
     flex: 1,
     paddingVertical: 12,
     fontSize: 14,
+    borderWidth:0,
   },
   pickerWrapper: {
     flexDirection: "row",

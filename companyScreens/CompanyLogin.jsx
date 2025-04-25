@@ -23,7 +23,7 @@ const CompanyLogin = ({navigation}) => {
 
             }
             console.log("Login Successful")
-            navigation.replace("ComapanyDashboard",{uid:uid});
+            navigation.replace("CompanyDashboard",{uid:uid});
          }
          else {
             Alert.alert('Error', 'User role not found.');
