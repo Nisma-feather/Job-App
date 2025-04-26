@@ -14,7 +14,7 @@ const CompanyTabs=({route})=>{
         tabBarActiveTintColor:'blue',
         tabBarInactiveTintColor:"gray"
     }}>
-        <Tab.Screen name="company Profile" component={CompanyProfile}/>
+        {/* <Tab.Screen name="company Profile" component={CompanyProfile}/> */}
         <Tab.Screen name="Post Jobs" compoenent={PostJob}/>
         
     </Tab.Navigator>

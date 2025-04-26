@@ -5,13 +5,13 @@ import CompanyProfile from "./CompanyProfile";
 
 const Tab=createBottomTabNavigator();
 
-const CompanyDashboard = ({route}) => {
-    console.log(route.params.uid);
+const CompanyDashboard = () => {
+   
   return (
     <Tab.Navigator screenOptions={{
       tabBarActiveTintColor:'blue',
       tabBarInactiveTintColor:"gray"
-  }}>
+  }} initialRouteName="Post Jobs">
       <Tab.Screen name="company Profile" component={CompanyProfile}/>
       <Tab.Screen name="Post Jobs" component={PostJob}/>
       

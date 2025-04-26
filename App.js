@@ -14,6 +14,10 @@ import RoleSelectionScreen from './screens/RoleSelectionScreen';
 import CompanyLogin from './companyScreens/CompanyLogin';
 import CompanySignUp from './companyScreens/CompanySignUp';
 import CompanyDashboard from './companyScreens/CompanyDashboard';
+import { JobPostSucessScreen } from './companyScreens/PostJob';
+import JobSeekerTab from './JobSeekerScreen/JobSeekerTab';
+
+
 
 // Company 
 const Stack=createNativeStackNavigator();
@@ -22,10 +26,10 @@ const JobSeekerStack=()=>{
   return(
 
   
-  <Stack.Navigator initialRouteName="Login">
+  <Stack.Navigator initialRouteName="JobSeeker Dashboard">
     <Stack.Screen name="Login" component={JobSeekerLoginScreen}/>
       <Stack.Screen name="Personal Information" component={PersonalInfoScreen} />
-      <Stack.Screen name="Home" component={HomeScreen}/>
+      <Stack.Screen name="JobSeeker Dashboard" component={JobSeekerTab}/>
       <Stack.Screen name="Education" component={EducaionScreen}/>
       <Stack.Screen name="Skills" component={SkillsScreen}/>
       <Stack.Screen name="Experience" component={ExperienceScreen}/>
@@ -38,6 +42,7 @@ const CompanyStack=()=>{
      <Stack.Screen name="CompanyLogin" component={CompanyLogin}/>
      <Stack.Screen name="CompanySignUp" component={CompanySignUp}/>
      <Stack.Screen name='CompanyDashboard' component={CompanyDashboard}/>
+     <Stack.Screen name="Job Post Success" component={JobPostSucessScreen}/>
 
   </Stack.Navigator>
   );
@@ -46,7 +51,7 @@ const CompanyStack=()=>{
 export default function App() {
   return (
    <NavigationContainer>
-    <Stack.Navigator initialRouteName='Role'>
+    <Stack.Navigator initialRouteName='JobSeekerStack'>
       <Stack.Screen name="Role" component={RoleSelectionScreen}/>
       <Stack.Screen name="JobSeekerStack" component={JobSeekerStack} options={{headerShown:false}}/>
       <Stack.Screen name="CompanyStack" component={CompanyStack} options={{headerShown:false}}/>

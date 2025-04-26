@@ -19,7 +19,7 @@ export default function JobSeekerLoginScreen({navigation}){
                     return
                 }
                 console.log("Login successfull")
-                navigation.navigate("Home",{uid:uid})
+                navigation.replace("JobSeeker Dashboard",{uid:uid})
              }
              else{
                 Alert.alert("user not Found")
@@ -45,6 +45,7 @@ export default function JobSeekerLoginScreen({navigation}){
         <TextInput placeholder="Email" value={email} onChangeText={setEmail}/>
         <TextInput  value={password} onChangeText={setPassword} secureTextEntry/>
         <Button title="Login" onPress={handleLogin}/>
+        <Button title="Signup" onPress={()=>navigation.navigate('Personal Information')}/>
       </SafeAreaView>
     );
 }
