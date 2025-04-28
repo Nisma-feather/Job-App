@@ -13,7 +13,7 @@ import {
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Feather from "react-native-vector-icons/Feather";
 import { Picker } from "@react-native-picker/picker";
-import { db } from "../firebaseConfig";
+import { db } from "../../firebaseConfig";
 import { doc, updateDoc } from "firebase/firestore";
 
 export default function SkillsUpdateScreen({ navigation, route }) {

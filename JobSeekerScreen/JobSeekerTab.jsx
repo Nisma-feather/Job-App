@@ -16,7 +16,7 @@ const Tab=createBottomTabNavigator();
 const Stack=createNativeStackNavigator();
 const JobSeekerTab=()=>{
     return(
-        <Tab.Navigator screenOptions={{headerShown:false}}>
+        <Tab.Navigator screenOptions={{headerShown:false}} initialRouteName="Find Jobs">
             <Tab.Screen name="Home" component={HomeScreen}/>
             <Tab.Screen name="BookMark" component={BookMarkScreen}/>
             <Tab.Screen name="Find Jobs" component={FindJobScreen}/>
@@ -29,8 +29,8 @@ const JobSeekerTab=()=>{
 }
 const ProfileStack=()=>{
     return(
-      <Stack.Navigator>
-        <Stack.Screen name="ProfileHome" component={ProfileScreen} options={{ headerShown: false }}/>
+      <Stack.Navigator initialRouteName="Projects">
+        <Stack.Screen name="ProfileHome" component={ProfileScreen} options={{ headerShown: false }} />
         <Stack.Screen name="PersonalInfo" component={PersonalInfoScreen}/>
         <Stack.Screen name="Education" component={EducationScreen}/>
         <Stack.Screen name="Experience" component={ExperienceScreen}/>
