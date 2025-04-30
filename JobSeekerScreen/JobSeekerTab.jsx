@@ -10,6 +10,7 @@ import EducationScreen from "./ProfileScreens/EducationScreen";
 import ExperienceScreen from "./ProfileScreens/ExperienceScreen";
 import SkillsScreen from "./ProfileScreens/SkillsSCreen";
 import ProjectsScreen from "./ProfileScreens/ProjectsScreen";
+import JobDetail from "./JobDetail";
 
 
 const Tab=createBottomTabNavigator();
@@ -19,13 +20,21 @@ const JobSeekerTab=()=>{
         <Tab.Navigator screenOptions={{headerShown:false}} initialRouteName="Find Jobs">
             <Tab.Screen name="Home" component={HomeScreen}/>
             <Tab.Screen name="BookMark" component={BookMarkScreen}/>
-            <Tab.Screen name="Find Jobs" component={FindJobScreen}/>
+            <Tab.Screen name="Find Jobs" component={FindJobsStack}/>
             <Tab.Screen name="Profile" component={ProfileStack}/>
 
         </Tab.Navigator>
 
     )
 
+}
+const FindJobsStack=()=>{
+  return(
+    <Stack.Navigator>
+      <Stack.Screen name="Jobs" component={FindJobScreen}/>
+      <Stack.Screen name="Job Details" component={JobDetail}/>
+    </Stack.Navigator>
+  )
 }
 const ProfileStack=()=>{
     return(

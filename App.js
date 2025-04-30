@@ -16,6 +16,7 @@ import CompanySignUp from './companyScreens/CompanySignUp';
 import CompanyDashboard from './companyScreens/CompanyDashboard';
 import { JobPostSucessScreen } from './companyScreens/PostJob';
 import JobSeekerTab from './JobSeekerScreen/JobSeekerTab';
+import JobDetail from './JobSeekerScreen/JobDetail';
 
 
 
@@ -33,6 +34,7 @@ const JobSeekerStack=()=>{
       <Stack.Screen name="Education" component={EducaionScreen}/>
       <Stack.Screen name="Skills" component={SkillsScreen}/>
       <Stack.Screen name="Experience" component={ExperienceScreen}/>
+    
   </Stack.Navigator>
   );
 }
