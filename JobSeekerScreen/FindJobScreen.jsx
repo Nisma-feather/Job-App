@@ -13,8 +13,8 @@ import {
   Pressable,
   ScrollView
 } from 'react-native';
-import { collection, doc, getDoc, getDocs } from 'firebase/firestore';
-import { db } from '../firebaseConfig';
+import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, where } from 'firebase/firestore';
+import { auth, db } from '../firebaseConfig';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -30,10 +30,21 @@ const FindJobScreen = ({navigation}) => {
   const [expFilter, setExpFilter] = useState([]);
   const [jobTypeFilter, setJobTypeFilter] = useState([]);
   const [jobModeFilter, setJobModeFilter] = useState([]);
+  const [bookmarkJobs,setBookmarkJobs]=useState([]);
 
   const expYeardata = ['Fresher', '0 - 1 year', '2-5 Years', 'More than 5 Years', 'More than 10 Years'];
   const JobTypedata = ['Full Time', 'Part Time', 'Internship'];
   const JobModedata = ['Hybrid', 'Remote', 'Offline'];
+  const uid=auth.currentUser?.uid;
+
+  const fetchBookMarks=async()=>{
+    const q=query((collection(db,'bookmarks')),where("userId","==",uid))
+    const bookmarkSnap=await getDocs(q);
+
+    const bookmarks=bookmarkSnap.docs.map((bookmark)=>bookmark.data().jobId);
+    setBookmarkJobs(bookmarks);
+
+  }
 
   const fetchJobs = async () => {
     try {
@@ -72,7 +83,8 @@ const FindJobScreen = ({navigation}) => {
  console.log(filteredJobs);
   useEffect(() => {
     fetchJobs();
-  }, []);
+    fetchBookMarks();
+  }, [uid]);
 
   const handlesearch = (value) => {
     setSearchQuery(value);
@@ -126,6 +138,28 @@ const FindJobScreen = ({navigation}) => {
     applyFilters();
     setShowFilters(false);
   };
+  const handletoggleBookmark=async(jobId)=>{
+    try
+    {
+      const q=query(collection(db,'bookmarks'),where('userId','==',uid),where('jobId','==',jobId));
+    const bookmarkSnap=await getDocs(q);
+
+    
+    if(!bookmarkSnap.empty){
+      await deleteDoc(doc(db,'bookmarks',bookmarkSnap.docs[0].id));
+      const newBookmark=bookmarkJobs.filter((id)=>id !== jobId);
+      setBookmarkJobs(newBookmark)
+    }
+    else{
+      await addDoc(collection(db,'bookmarks'),{userId:uid,jobId});
+      setBookmarkJobs([...bookmarkJobs,jobId])
+     
+    }
+  }
+  catch(e){
+    console.log(e);
+  }
+  }
   const styles = StyleSheet.create({
     container: {
       padding: 16,
@@ -271,8 +305,8 @@ const FindJobScreen = ({navigation}) => {
               </View>
             </View>
           
-            <Pressable style={styles.bookmarkIcon}>
-              <Ionicons name="bookmarks" color="#333" size={22} />
+            <Pressable style={styles.bookmarkIcon} onPress={()=>handletoggleBookmark(item.id)}>
+              <Ionicons name={bookmarkJobs.includes(item.id)?"bookmark":'bookmark-outline'} color="#333" size={22} />
             </Pressable>
           </View>
           </Pressable>

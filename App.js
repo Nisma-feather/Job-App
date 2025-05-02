@@ -17,6 +17,7 @@ import CompanyDashboard from './companyScreens/CompanyDashboard';
 import { JobPostSucessScreen } from './companyScreens/PostJob';
 import JobSeekerTab from './JobSeekerScreen/JobSeekerTab';
 import JobDetail from './JobSeekerScreen/JobDetail';
+import ApplyJob, { JobApplicationSuccess } from './JobSeekerScreen/ApplyJob';
 
 
 
@@ -34,7 +35,10 @@ const JobSeekerStack=()=>{
       <Stack.Screen name="Education" component={EducaionScreen}/>
       <Stack.Screen name="Skills" component={SkillsScreen}/>
       <Stack.Screen name="Experience" component={ExperienceScreen}/>
-    
+      <Stack.Screen name='Job Details' component={JobDetail}/>
+      <Stack.Screen name="Apply Job" component={ApplyJob}/>
+      <Stack.Screen name="Application successfull" component={JobApplicationSuccess}/>
+      
   </Stack.Navigator>
   );
 }
