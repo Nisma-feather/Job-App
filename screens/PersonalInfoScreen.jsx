@@ -5,7 +5,6 @@ import {
   Text,
   TextInput,
   StyleSheet,
-  Pressable,
   TouchableOpacity,
   ScrollView,
 } from "react-native";
@@ -17,12 +16,72 @@ const PersonalInfoScreen = ({ navigation }) => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
-    address: "",
     email: "",
-    id: "",
     password: "",
     gender: "",
   });
+
+  const [error, setError] = useState({
+    firstNameError: "",
+    lastNameError: "",
+    emailError: "",
+    passwordError: "",
+    genderError: "",
+  });
+
+  const validate = () => {
+    let valid = true;
+    const errors = {
+      firstNameError: "",
+      lastNameError: "",
+      emailError: "",
+      passwordError: "",
+      genderError: "",
+    };
+  
+    // First Name validation
+    if (!formData.firstName.trim()) {
+      errors.firstNameError = "First name is required";
+      valid = false;
+    }
+  
+    // Last Name validation
+    if (!formData.lastName.trim()) {
+      errors.lastNameError = "Last name is required";
+      valid = false;
+    }
+  
+    // Email validation
+    if (!formData.email.trim()) {
+      errors.emailError = "Email is required";
+      valid = false;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      errors.emailError = "Invalid email format";
+      valid = false;
+    }
+  
+    // Password validation
+    if (!formData.password.trim()) {
+      errors.passwordError = "Password is required";
+      valid = false;
+    } else {
+      const passRegex =  /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+      if (!passRegex.test(formData.password)) {
+        errors.passwordError =
+          "Password must be at least 8 characters and include at least one specialcharacter and one number";
+        valid = false;
+      }
+    }
+  
+    // Gender validation
+    if (!formData.gender) {
+      errors.genderError = "Please select a gender";
+      valid = false;
+    }
+  
+    setError(errors);
+    return valid;
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -35,9 +94,13 @@ const PersonalInfoScreen = ({ navigation }) => {
           <TextInput
             placeholder="First Name"
             style={styles.input}
+            value={formData.firstName}
             onChangeText={(val) => setFormData({ ...formData, firstName: val })}
           />
         </View>
+        {error.firstNameError ? (
+          <Text style={styles.errorText}>{error.firstNameError}</Text>
+        ) : null}
 
         {/* Last Name */}
         <View style={styles.inputWrapper}>
@@ -45,9 +108,13 @@ const PersonalInfoScreen = ({ navigation }) => {
           <TextInput
             placeholder="Last Name"
             style={styles.input}
+            value={formData.lastName}
             onChangeText={(val) => setFormData({ ...formData, lastName: val })}
           />
         </View>
+        {error.lastNameError ? (
+          <Text style={styles.errorText}>{error.lastNameError}</Text>
+        ) : null}
 
         {/* Email */}
         <View style={styles.inputWrapper}>
@@ -56,19 +123,13 @@ const PersonalInfoScreen = ({ navigation }) => {
             placeholder="Email"
             keyboardType="email-address"
             style={styles.input}
+            value={formData.email}
             onChangeText={(val) => setFormData({ ...formData, email: val })}
           />
         </View>
-
-        {/* ID */}
-        <View style={styles.inputWrapper}>
-          <FontAwesome name="id-card" size={18} color="#888" style={styles.icon} />
-          <TextInput
-            placeholder="ID"
-            style={styles.input}
-            onChangeText={(val) => setFormData({ ...formData, id: val })}
-          />
-        </View>
+        {error.emailError ? (
+          <Text style={styles.errorText}>{error.emailError}</Text>
+        ) : null}
 
         {/* Password */}
         <View style={styles.inputWrapper}>
@@ -77,9 +138,13 @@ const PersonalInfoScreen = ({ navigation }) => {
             placeholder="Password"
             style={styles.input}
             secureTextEntry
+            value={formData.password}
             onChangeText={(val) => setFormData({ ...formData, password: val })}
           />
         </View>
+        {error.passwordError ? (
+          <Text style={styles.errorText}>{error.passwordError}</Text>
+        ) : null}
 
         {/* Gender */}
         <View style={styles.pickerWrapper}>
@@ -97,11 +162,18 @@ const PersonalInfoScreen = ({ navigation }) => {
             <Picker.Item label="Other" value="other" />
           </Picker>
         </View>
+        {error.genderError ? (
+          <Text style={styles.errorText}>{error.genderError}</Text>
+        ) : null}
 
         {/* Continue Button */}
         <TouchableOpacity
           style={styles.button}
-          onPress={() => navigation.navigate("Education", { personalData: formData })}
+          onPress={() => {
+            if (validate()) {
+              navigation.navigate("Education", { personalData: formData });
+            }
+          }}
         >
           <Text style={styles.buttonText}>Continue</Text>
         </TouchableOpacity>
@@ -132,19 +204,16 @@ const styles = StyleSheet.create({
     backgroundColor: "#f4f4f4",
     borderRadius: 12,
     paddingHorizontal: 12,
-    marginBottom: 15,
+    marginBottom: 10,
     elevation: 1,
   },
   icon: {
     marginRight: 8,
-   
   },
-
   input: {
     flex: 1,
     paddingVertical: 12,
     fontSize: 14,
-    borderWidth:0,
   },
   pickerWrapper: {
     flexDirection: "row",
@@ -152,14 +221,19 @@ const styles = StyleSheet.create({
     backgroundColor: "#f4f4f4",
     borderRadius: 12,
     paddingHorizontal: 12,
-    marginBottom: 20,
+    marginBottom: 10,
     elevation: 1,
   },
   picker: {
     flex: 1,
     height: 50,
-    backgroundColor:"#f4f4f4",
-    border:"none",
+    backgroundColor: "#f4f4f4",
+  },
+  errorText: {
+    color: "red",
+    fontSize: 12,
+    marginBottom: 10,
+    marginLeft: 10,
   },
   button: {
     backgroundColor: "#1967d2",
@@ -168,15 +242,13 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 20,
     elevation: 3,
-    shadowColor:"blue",
+    shadowColor: "blue",
     shadowOffset: {
       width: 0,
       height: 2,
     },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    
-    elevation: 5,
   },
   buttonText: {
     color: "#fff",

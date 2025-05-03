@@ -7,7 +7,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Foundation from 'react-native-vector-icons/Foundation';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
-const JobDetail = ({ route }) => {
+const JobDetail = ({ route,navigation }) => {
   const { currentJob } = route.params;
   const [company, setCompany] = useState({})
   const [activeTab, setActiveTab] = useState('description');
@@ -134,8 +134,8 @@ const JobDetail = ({ route }) => {
       </ScrollView>
 
       {/* Bottom Button */}
-      <View style={styles.bottomButton}>
-        <TouchableOpacity style={styles.applyBtn}>
+      <View style={styles.bottomButton} >
+        <TouchableOpacity style={styles.applyBtn} onPress={()=>navigation.navigate("Apply Job")}>
           <Text style={styles.applyText}>Apply This Job</Text>
         </TouchableOpacity>
       </View>

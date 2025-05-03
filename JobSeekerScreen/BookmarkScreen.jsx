@@ -74,7 +74,7 @@ const removeBookmark=async(jobId)=>{
                   
                     <View style={{ flex: 1 }}>
                       <Text style={styles.jobTitle}>{item.jobrole}</Text>
-                      <Text style={styles.companyName}>{item.companyName}</Text> {/* Replace with dynamic name if added later */}
+                      {/* <Text style={styles.companyName}>{item.companyName}</Text> */}
                   
                       <View style={styles.metaRow}>
                         <Entypo name="location-pin" color="#666" size={18} />

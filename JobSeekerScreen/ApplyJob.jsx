@@ -5,7 +5,7 @@ import { auth, db } from "../firebaseConfig";
 import { addDoc, collection } from "firebase/firestore";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from "@react-navigation/native";
-const ApplyJob = () => {
+const ApplyJob = ({navigation}) => {
     const [jobForm, setJobForm] = useState({
         name: "",
         website: "",
@@ -42,6 +42,7 @@ const ApplyJob = () => {
                 jobId: JobId,
                 ...jobForm,
                 cvFile: cvFile ? cvFile.name : null,
+                notified: false,
                 submittedAt: new Date()
             };
             await addDoc(collection(db, 'jobApplications'), data);

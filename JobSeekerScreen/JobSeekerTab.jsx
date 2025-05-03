@@ -45,7 +45,7 @@ const JobSeekerTab=()=>{
 
 const ProfileStack=()=>{
     return(
-      <Stack.Navigator initialRouteName="Projects">
+      <Stack.Navigator initialRouteName="ProfileHome">
         <Stack.Screen name="ProfileHome" component={ProfileScreen} options={{ headerShown: false }} />
         <Stack.Screen name="PersonalInfo" component={PersonalInfoScreen}/>
         <Stack.Screen name="Education" component={EducationScreen}/>
