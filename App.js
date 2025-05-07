@@ -18,6 +18,10 @@ import { JobPostSucessScreen } from './companyScreens/PostJob';
 import JobSeekerTab from './JobSeekerScreen/JobSeekerTab';
 import JobDetail from './JobSeekerScreen/JobDetail';
 import ApplyJob, { JobApplicationSuccess } from './JobSeekerScreen/ApplyJob';
+import JobTypeScreen from './screens/UserInterest';
+import SignupScreen from './screens/SignupScreen';
+import BasicDetailsScreen from './screens/BasicDetailsScreen';
+import UserInterestForm from './screens/UserInterest';
 
 
 
@@ -28,8 +32,9 @@ const JobSeekerStack=()=>{
   return(
 
   
-  <Stack.Navigator initialRouteName="Education">
+  <Stack.Navigator initialRouteName="JobSeeker Dashboard" options={{headerShown:false}}>
     <Stack.Screen name="Login" component={JobSeekerLoginScreen}/>
+       <Stack.Screen name="SignUp" component={SignupScreen}/>
       <Stack.Screen name="Personal Information" component={PersonalInfoScreen} />
       <Stack.Screen name="JobSeeker Dashboard" component={JobSeekerTab}/>
       <Stack.Screen name="Education" component={EducaionScreen}/>
@@ -37,6 +42,9 @@ const JobSeekerStack=()=>{
       <Stack.Screen name="Experience" component={ExperienceScreen}/>
       <Stack.Screen name='Job Details' component={JobDetail}/>
       <Stack.Screen name="Apply Job" component={ApplyJob}/>
+      <Stack.Screen name='Job Type' component={JobTypeScreen}/>
+      <Stack.Screen name="Basic Info" component={BasicDetailsScreen}/>
+      <Stack.Screen name="User Interest" component={UserInterestForm}/>
     
       <Stack.Screen name="Application successfull" component={JobApplicationSuccess}/>
       
@@ -58,7 +66,7 @@ const CompanyStack=()=>{
 export default function App() {
   return (
    <NavigationContainer>
-    <Stack.Navigator initialRouteName='JobSeekerStack'>
+    <Stack.Navigator initialRouteName='JobSeekerStack' o>
       <Stack.Screen name="Role" component={RoleSelectionScreen}/>
       <Stack.Screen name="JobSeekerStack" component={JobSeekerStack} options={{headerShown:false}}/>
       <Stack.Screen name="CompanyStack" component={CompanyStack} options={{headerShown:false}}/>

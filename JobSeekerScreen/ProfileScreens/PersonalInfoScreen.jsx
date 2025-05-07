@@ -8,12 +8,8 @@ import Feather from "react-native-vector-icons/Feather";
 import { Picker } from "@react-native-picker/picker";
 const PersonalInfoScreen = ({navigation}) => {
     const [formData, setFormData] = useState({
-        firstName: "",
-        lastName: "",
+        name: "",
         address: "",
-        email: "",
-        id: "",
-        password: "",
         gender: "",
       });
   const [loading, setLoading] = useState(true);
@@ -25,15 +21,11 @@ const PersonalInfoScreen = ({navigation}) => {
         const userRef = doc(db, "users", userId);
         const docSnap = await getDoc(userRef);
         if (docSnap.exists()) {
-          const data = docSnap.data().personalInfo;
+          const data = docSnap.data().personalData;
           console.log(data)
           setFormData({
-            firstName: data.firstName || "",
-            lastName: data.lastName || "",
+            name: data.name || "",
             address: data.address || "",
-            email: data.email || "",
-            id: data.id || "",
-            password: data.password || "",
             gender: data.gender || "",
           });
         }
@@ -48,7 +40,7 @@ const PersonalInfoScreen = ({navigation}) => {
   const handleUpdate = async () => {
     try {
       const userRef = doc(db, "users", userId);
-      await updateDoc(userRef, {personalInfo:formData});
+      await updateDoc(userRef, {personalData:formData});
       Alert.alert("Success", "Personal Information Updated Successfully!");
       navigation.navigate('ProfileHome')
 
@@ -77,54 +69,26 @@ const PersonalInfoScreen = ({navigation}) => {
           <TextInput
             placeholder="First Name"
             style={styles.input}
-            value={formData.firstName}
-            onChangeText={(val) => setFormData({ ...formData, firstName: val })}
+            value={formData.name}
+            onChangeText={(val) => setFormData({ ...formData, name: val })}
           />
         </View>
 
-        {/* Last Name */}
-        <View style={styles.inputWrapper}>
-          <FontAwesome name="user" size={18} color="#888" style={styles.icon} />
-          <TextInput
-            placeholder="Last Name"
-            style={styles.input}
-            value={formData.lastName}
-            onChangeText={(val) => setFormData({ ...formData, lastName: val })}
-          />
-        </View>
+    
 
-        {/* Email */}
-        <View style={styles.inputWrapper}>
-          <FontAwesome name="envelope" size={18} color="#888" style={styles.icon} />
-          <TextInput
-            placeholder="Email"
-            keyboardType="email-address"
-            style={styles.input}
-            value={formData.email}
-            onChangeText={(val) => setFormData({ ...formData, email: val })}
-          />
-        </View>
+        
 
-        {/* ID */}
-        <View style={styles.inputWrapper}>
-          <FontAwesome name="id-card" size={18} color="#888" style={styles.icon} />
-          <TextInput
-            placeholder="ID"
-            style={styles.input}
-            value={formData.id}
-            onChangeText={(val) => setFormData({ ...formData, id: val })}
-          />
-        </View>
+        
 
         {/* Password */}
         <View style={styles.inputWrapper}>
           <Feather name="lock" size={18} color="#888" style={styles.icon} />
           <TextInput
-            placeholder="Password"
+            multiline
             style={styles.input}
             secureTextEntry
-            value={formData.password}
-            onChangeText={(val) => setFormData({ ...formData, password: val })}
+            value={formData.address}
+            onChangeText={(val) => setFormData({ ...formData, address: val })}
           />
         </View>
 
@@ -140,7 +104,7 @@ const PersonalInfoScreen = ({navigation}) => {
           >
             <Picker.Item label="Select Gender" value="" />
             <Picker.Item label="Male" value="male" />
-            <Picker.Item label="Female" value="female" />
+            <Picker.Item label="Female" value="Female" />
             <Picker.Item label="Other" value="other" />
           </Picker>
         </View>

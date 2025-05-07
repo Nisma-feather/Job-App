@@ -9,6 +9,7 @@ import {
   StyleSheet,
   ScrollView,
 } from "react-native";
+import Foundation from 'react-native-vector-icons/Foundation';
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Feather from "react-native-vector-icons/Feather";
 import DatePicker from "react-native-date-picker";
@@ -30,8 +31,13 @@ export default function ExperienceScreen({ navigation, route }) {
       description: "",
     },
   ]);
-
-  const { personalData, educationData, skillsData } = route.params;
+  const [errors,setErrors]=useState([{
+    roleError:"",
+    companyError:"",
+    previousError:""
+  }]
+)
+  // const { personalData, educationData, skillsData } = route.params;
 
   const handleChange = (field, index, value) => {
     const newExperience = [...experiences];
@@ -40,19 +46,63 @@ export default function ExperienceScreen({ navigation, route }) {
   };
 
   const handleAddExperience = () => {
-    setExperiences([
-      ...experiences,
-      {
-        role: "",
-        company: "",
-        from: new Date(),
-        to: new Date(),
-        description: "",
-      },
-    ]);
+    const newExperience=[...experiences];
+    const currrentexp=newExperience[newExperience.length-1];
+    if(currrentexp.role.trim() && currrentexp.company.trim()){
+      setExperiences([
+        ...experiences,
+        {
+          role: "",
+          company: "",
+          from: new Date(),
+          to: new Date(),
+          description: "",
+        },
+
+      ]);
+      setErrors([...errors,{
+        roleError:"",
+        companyError:"",
+        previousError:""
+      }]);
+      
+      
+    }
+    else{
+      alert("fill out the previous field first")
+    }
+    
+    
   };
+  const validate=()=>{
+    let valid=true;
+    const newErrors=[...errors]
+    experiences.map((experience,index)=>{
+      
+         if(!experience.role.trim()){
+              newErrors[index].roleError="This Field is required";
+              valid=false
+         }
+         else{
+              newErrors[index].roleError=""
+         }
+         if(!experience.company.trim()){
+             newErrors[index].companyError="This Field is required";
+             valid=false
+         }
+         else{
+            newErrors[index].companyError=""
+         }
+
+    })
+    setErrors(newErrors);
+    return(valid)
+  }
 
   const handleSubmit = async () => {
+    // if(validate()){
+    //   return
+    // }
     try {
       const email = personalData.email;
       const password = personalData.password;
@@ -64,15 +114,15 @@ export default function ExperienceScreen({ navigation, route }) {
       );
       const uid = userCred.user.uid;
 
-      await setDoc(doc(db, "users", uid), {
-        email,
-        role: "jobseeker",
-        personalInfo: personalData,
-        education: educationData,
-        skills: skillsData,
-        experiences: experiences,
-        createdAt: new Date(),
-      });
+      // await setDoc(doc(db, "users", uid), {
+      //   email,
+      //   role: "jobseeker",
+      //   personalInfo: personalData,
+      //   education: educationData,
+      //   skills: skillsData,
+      //   experiences: experiences,
+      //   createdAt: new Date(),
+      // });
 
       Alert.alert("Success", "Account created and saved successfully");
       navigation.navigate("Login");
@@ -81,14 +131,16 @@ export default function ExperienceScreen({ navigation, route }) {
       Alert.alert("Error", "Something went wrong while saving your data");
     }
   };
-
+const handleDlete=(index)=>{
+  setExperiences(experiences.filter((exp,idx)=>idx !==index));
+}
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollWrapper}>
         {experiences.map((exp, index) => (
           <View key={index} style={styles.expSection}>
             <Text style={styles.title}>Experience {index + 1}</Text>
-
+            { index===1?<Pressable onPress={()=>handleDlete(index)}><Foundation name="trash" color="#1967d2" size={24} /></Pressable>:null}
             <View style={styles.inputWrapper}>
               <TextInput
                 placeholder="Role/Position"
@@ -96,6 +148,7 @@ export default function ExperienceScreen({ navigation, route }) {
                 value={exp.role}
                 onChangeText={(value) => handleChange("role", index, value)}
               />
+               <Text>{errors[index]?.roleError}</Text>
             </View>
 
             <View style={styles.inputWrapper}>
@@ -105,6 +158,8 @@ export default function ExperienceScreen({ navigation, route }) {
                 value={exp.company}
                 onChangeText={(value) => handleChange("company", index, value)}
               />
+              <Text>{errors[index]?.companyError}</Text>
+           
             </View>
 
             {/* Uncomment below to use date pickers for from/to */}
@@ -134,6 +189,7 @@ export default function ExperienceScreen({ navigation, route }) {
                   handleChange("description", index, value)
                 }
               />
+              
             </View>
           </View>
         ))}

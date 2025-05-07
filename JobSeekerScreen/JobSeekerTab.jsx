@@ -12,13 +12,14 @@ import ExperienceScreen from "./ProfileScreens/ExperienceScreen";
 import SkillsScreen from "./ProfileScreens/SkillsSCreen";
 import ProjectsScreen from "./ProfileScreens/ProjectsScreen";
 import JobDetail from "./JobDetail";
+import SkillsUpdateScreen from "./ProfileScreens/SkillsSCreen";
 
 
 const Tab=createBottomTabNavigator();
 const Stack=createNativeStackNavigator();
 const JobSeekerTab=()=>{
     return(
-        <Tab.Navigator screenOptions={{headerShown:false}} initialRouteName="BookMark">
+        <Tab.Navigator screenOptions={{headerShown:false}} initialRouteName="Profile">
             <Tab.Screen name="Home" component={HomeScreen} options={{
                                                       tabBarIcon:()=>(
                                                         <Ionicons name="home"  size={24} />
