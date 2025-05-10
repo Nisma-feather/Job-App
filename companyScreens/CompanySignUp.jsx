@@ -102,8 +102,9 @@ const CompanySignUp = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView >
       <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.container}>
         <View style={styles.logoContainer}>
           <View style={styles.logoOuter}>
             <MaterialIcons name="double-arrow" color="#fff" size={28} />
@@ -156,6 +157,8 @@ const CompanySignUp = ({ navigation }) => {
         <TouchableOpacity style={styles.signUpButton} onPress={handleSignup}>
           <Text style={styles.signUpButtonText}>Sign Up</Text>
         </TouchableOpacity>
+      </View>
+
       </ScrollView>
     </SafeAreaView>
   );
