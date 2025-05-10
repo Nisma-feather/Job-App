@@ -9,18 +9,21 @@ import PersonalInfoScreen from "./ProfileScreens/PersonalInfoScreen";
 import ProfileScreen from "./ProfileScreen";
 import EducationScreen from "./ProfileScreens/EducationScreen";
 import ExperienceScreen from "./ProfileScreens/ExperienceScreen";
-import SkillsScreen from "./ProfileScreens/SkillsSCreen";
+
 import ProjectsScreen from "./ProfileScreens/ProjectsScreen";
 import JobDetail from "./JobDetail";
-import SkillsUpdateScreen from "./ProfileScreens/SkillsSCreen";
+import SkillsUpdateScreen from "./ProfileScreens/SkillsScreen";
+import ApplyJob from "./ApplyJob";
+import JobCard from "./JobCard";
+
 
 
 const Tab=createBottomTabNavigator();
 const Stack=createNativeStackNavigator();
 const JobSeekerTab=()=>{
     return(
-        <Tab.Navigator screenOptions={{headerShown:false}} initialRouteName="Profile">
-            <Tab.Screen name="Home" component={HomeScreen} options={{
+        <Tab.Navigator screenOptions={{headerShown:false}} initialRouteName="Find Jobs">
+            <Tab.Screen name="Home" component={HomeStack} options={{
                                                       tabBarIcon:()=>(
                                                         <Ionicons name="home"  size={24} />
                                                       )
@@ -29,7 +32,7 @@ const JobSeekerTab=()=>{
                                                       tabBarIcon:()=>(
                                                         <Ionicons name="bookmarks-sharp"  size={24} />
                                                       )}} />
-            <Tab.Screen name="Find Jobs" component={FindJobScreen} options={{
+            <Tab.Screen name="Find Jobs" component={JobStack} options={{
                                                       tabBarIcon:()=>(
                                                         <Ionicons name="search" color="#000" size={24} />
                                                       )}}/>
@@ -51,10 +54,33 @@ const ProfileStack=()=>{
         <Stack.Screen name="PersonalInfo" component={PersonalInfoScreen}/>
         <Stack.Screen name="Education" component={EducationScreen}/>
         <Stack.Screen name="Experience" component={ExperienceScreen}/>
-        <Stack.Screen name="Skills" component={SkillsScreen}/>
+        <Stack.Screen name="Skills" component={SkillsUpdateScreen}/>
         <Stack.Screen name="Projects" component={ProjectsScreen}/>
-
       </Stack.Navigator>
     )
+}
+
+const JobStack=()=>{
+  return(
+  <Stack.Navigator options={{headerShown:'false'}}>
+    <Stack.Screen name="Find Job" component={FindJobScreen}/>
+   
+    <Stack.Screen name="Job Details" component={JobDetail}/>
+    <Stack.Screen name="Apply Job" component={ApplyJob}/>
+  </Stack.Navigator>
+
+  )
+ 
+}
+const HomeStack=()=>{
+  return(
+    <Stack.Navigator>
+      <Stack.Screen name="HomeScreen" component={HomeScreen}/>
+      <Stack.Screen name="Find Job" component={FindJobScreen}/>
+      
+     
+    
+    </Stack.Navigator>
+  )
 }
 export default JobSeekerTab

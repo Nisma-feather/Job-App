@@ -13,12 +13,14 @@ import {
   Pressable,
   ScrollView
 } from 'react-native';
+import JobCard from './JobCard';
 import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, where } from 'firebase/firestore';
 import { auth, db } from '../firebaseConfig';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Feather from 'react-native-vector-icons/Feather';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 
 const FindJobScreen = ({navigation}) => {
@@ -31,6 +33,8 @@ const FindJobScreen = ({navigation}) => {
   const [jobTypeFilter, setJobTypeFilter] = useState([]);
   const [jobModeFilter, setJobModeFilter] = useState([]);
   const [bookmarkJobs,setBookmarkJobs]=useState([]);
+  const [options,setOptions] = useState("");
+  
 
   const expYeardata = ['Fresher', '0 - 1 year', '2-5 Years', 'More than 5 Years', 'More than 10 Years'];
   const JobTypedata = ['Full Time', 'Part Time', 'Internship'];
@@ -51,29 +55,29 @@ const FindJobScreen = ({navigation}) => {
       const q = collection(db, 'jobs');
       const querySnap = await getDocs(q);
       const fetchedJobs = [];
-      // querySnap.forEach((doc) => {
-      //   fetchedJobs.push({ id: doc.id, ...doc.data() });
-      // });
-      for (const jobDoc of querySnap.docs) {
-        const jobdata = jobDoc.data();
+      querySnap.forEach((doc) => {
+        fetchedJobs.push({ id: doc.id, ...doc.data() });
+      });
+      // for (const jobDoc of querySnap.docs) {
+      //   const jobdata = jobDoc.data();
   
-        let companyName = 'Unknown Company';
+      //   let companyName = 'Unknown Company';
         
   
        
           
-          const companyRef = doc(db, 'companies', jobdata.companyUID);
-          console.log(companyRef)
-          const companySnap = await getDoc(companyRef);
-          console.log(companySnap.data());
-          if (companySnap.exists()) {
+      //     const companyRef = doc(db, 'companies', jobdata.companyUID);
+      //     console.log(companyRef)
+      //     const companySnap = await getDoc(companyRef);
+      //     console.log(companySnap.data());
+      //     if (companySnap.exists()) {
            
-            companyName = companySnap.data().companyName || 'Unknown Company';
-          }
+      //       companyName = companySnap.data().companyName || 'Unknown Company';
+      //     }
         
   
-        fetchedJobs.push({ id: jobDoc.id, ...jobdata, companyName });
-      }
+      //   fetchedJobs.push({ id: jobDoc.id, ...jobdata, companyName });
+      // }
       setJobs(fetchedJobs);
       setFilteredJobs(fetchedJobs);
     } catch (e) {
@@ -165,26 +169,44 @@ const FindJobScreen = ({navigation}) => {
       padding: 16,
       flex: 1,
       backgroundColor: '#f9f9f9',
-      
     },
-    input: {
-      borderWidth: 1,
-      padding: 8,
+    inputContainer: {
+      marginBottom: 16,
+    },
+    inputWrapper: {
+      position: 'relative',
       marginBottom: 8,
+    },
+    inputIcon: {
+      position: 'absolute',
+      top: 14,
+      left: 10,
+      zIndex: 2,
+    },
+    inputField: {
+      backgroundColor: "white",
+      height: 50,
+      width: "100%",
+      paddingLeft: 35,
+      borderColor: "#dedede",
+      borderWidth: 1,
       borderRadius: 6,
+    },
+    filterButton: {
+      backgroundColor: '#0a66c2',
+      padding: 12,
+      borderRadius: 6,
+      alignItems: 'center',
+      marginTop: 8,
+    },
+    filterButtonText: {
+      color: 'white',
+      fontWeight: 'bold',
     },
     listJobs: {
       padding: 15,
-      marginTop:60
+      marginTop: 16,
     },
-    logo: {
-      width: 50,
-      height: 50,
-      borderRadius: 25,
-      marginRight: 12,
-      alignSelf: 'center',
-    },
-    
     jobItem: {
       flexDirection: 'row',
       alignItems: 'center',
@@ -198,44 +220,39 @@ const FindJobScreen = ({navigation}) => {
       elevation: 2,
       marginBottom: 12,
     },
-    
     jobTitle: {
       fontSize: 16,
       fontWeight: '700',
       color: '#333',
     },
-    
     companyName: {
       fontSize: 14,
       color: '#666',
       marginBottom: 4,
     },
-    
     metaRow: {
       flexDirection: 'row',
       alignItems: 'center',
       marginTop: 4,
     },
-    
     metaText: {
       fontSize: 13,
       color: '#555',
       marginLeft: 4,
     },
-    
     bookmarkIcon: {
       marginLeft: 10,
       alignSelf: 'flex-start',
     },
     filtersContainer: {
-      
-      position:"absolute",
-      backgroundColor:"white",
-      width:"75%",
-      height:"100%",
-      top:0,
-      right:0,
-      padding:10
+      position: "absolute",
+      backgroundColor: "white",
+      width: "75%",
+      height: "100%",
+      top: 0,
+      right: 0,
+      padding: 10,
+      zIndex: 10,
     },
     sectionTitle: {
       fontWeight: 'bold',
@@ -246,135 +263,147 @@ const FindJobScreen = ({navigation}) => {
       flexDirection: 'row',
       flexWrap: 'wrap',
     },
-    filterButton: {
+    filterOptionButton: {
       padding: 8,
       margin: 4,
       backgroundColor: '#e0e0e0',
       borderRadius: 6,
     },
-    filterButtonSelected: {
+    filterOptionButtonSelected: {
       backgroundColor: '#4caf50',
+    },
+    closeButton: {
+      alignSelf: 'flex-end',
+      marginBottom: 10,
     },
   });
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView>
-      <View style={{position:"relative"}}>
-      <Feather name="search" color="#000" size={20} style={{position:'absolute',top:'14px',left:10}}/>
-      <TextInput
-        placeholder="Search Jobs"
-        value={searchQuery}
-        onChangeText={handlesearch}
-        style={[styles.input,{position:'absolute',height:50,width:"100%",paddingLeft:35}]}
-      />
-      <Pressable  onPress={() => setShowFilters(true)} >
-      <Ionicons name="options" color="#000" size={24} style={{position:"absolute",right:'20px',top:'14px'}}/>
-      </Pressable>
-      </View>
-      <View style={{position:'relative',marginTop:60}}>
-      <Ionicons name="location-outline" color="#000" size={20} style={{position:'absolute',top:'14px',left:10}}/>
-      <TextInput
-        placeholder="Search by Location"
-        value={locationQuery}
-        onChangeText={handleLocationSearch}
-        style={[styles.input,{position:'absolute',height:50,width:"100%",paddingLeft:35,}]}
-      />
-      </View>
-      
-      <View style={styles.listJobs}>
-        <FlatList
-          data={filteredJobs}
-          renderItem={({ item }) => (
-            <Pressable onPress={()=>navigation.navigate("Job Details",{currentJob:item})}>
-            <View style={styles.jobItem}>
-            <Image source={dummyimg} style={styles.logo} />
-          
-            <View style={{ flex: 1 }}>
-              <Text style={styles.jobTitle}>{item.jobrole}</Text>
-              <Text style={styles.companyName}>{item.companyName}</Text> {/* Replace with dynamic name if added later */}
-          
-              <View style={styles.metaRow}>
-                <Entypo name="location-pin" color="#666" size={18} />
-                <Text style={styles.metaText}>{item.locations}</Text>
-              </View>
-          
-              <View style={styles.metaRow}>
-                <MaterialCommunityIcons name="office-building-outline" color="#666" size={18} />
-                <Text style={styles.metaText}>{item.jobType}</Text>
-              </View>
-            </View>
-          
-            <Pressable style={styles.bookmarkIcon} onPress={()=>handletoggleBookmark(item.id)}>
-              <Ionicons name={bookmarkJobs.includes(item.id)?"bookmark":'bookmark-outline'} color="#333" size={22} />
+      <ScrollView style={{width: "100%"}}>
+        <View style={{padding: 10, width: "100%"}}>
+          {/* Search Jobs Input */}
+          <View style={styles.inputWrapper}>
+            <Feather 
+              name="search" 
+              color="#7196c8" 
+              size={20} 
+              style={styles.inputIcon}
+            />
+            <TextInput
+              placeholder="Search Jobs"
+              value={searchQuery}
+              onChangeText={handlesearch}
+              style={styles.inputField}
+            />
+            <Pressable 
+              onPress={() => setShowFilters(true)} 
+              style={{position: 'absolute', right: 10, top: 14}}
+            >
+              <Ionicons name="options" color="#000" size={24} />
             </Pressable>
           </View>
-          </Pressable>
+
+          {/* Location Input */}
+          <View style={styles.inputWrapper}>
+            <Ionicons 
+              name="location-outline" 
+              color="#7196c8" 
+              size={20} 
+              style={styles.inputIcon}
+            />
+            <TextInput
+              placeholder="Search by Location"
+              value={locationQuery}
+              onChangeText={handleLocationSearch}
+              style={styles.inputField}
+            />
+          </View>
+
+          {/* Apply Filter Button */}
+          <TouchableOpacity 
+            style={styles.filterButton}
+            onPress={() => setShowFilters(true)}
+          >
+            <Text style={styles.filterButtonText}>Apply Filters</Text>
+          </TouchableOpacity>
+
+          {/* Jobs List */}
+          <View style={styles.listJobs}>
+            <FlatList
+              data={filteredJobs}
+              renderItem={({ item }) => (
+                <JobCard item={item} navigation={navigation}/>
+              )}
+              keyExtractor={(item) => item.id.toString()}
+            />
+          </View>
+
+          {/* Filter Panel */}
+          {showFilter && (
+            <View style={styles.filtersContainer}>
+              <Pressable 
+                onPress={() => setShowFilters(false)}
+                style={styles.closeButton}
+              >
+                <FontAwesome name="close" color="#000" size={24} />
+              </Pressable>
+
+              <Text style={styles.sectionTitle}>Experience</Text>
+              <View style={styles.filtersRow}>
+                {expYeardata.map((exp) => (
+                  <TouchableOpacity
+                    key={exp}
+                    onPress={() => togglefilters(expFilter, setExpFilter, exp)}
+                    style={[
+                      styles.filterOptionButton,
+                      expFilter.includes(exp) && styles.filterOptionButtonSelected,
+                    ]}
+                  >
+                    <Text>{exp}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              <Text style={styles.sectionTitle}>Job Type</Text>
+              <View style={styles.filtersRow}>
+                {JobTypedata.map((type) => (
+                  <TouchableOpacity
+                    key={type}
+                    onPress={() => togglefilters(jobTypeFilter, setJobTypeFilter, type)}
+                    style={[
+                      styles.filterOptionButton,
+                      jobTypeFilter.includes(type) && styles.filterOptionButtonSelected,
+                    ]}
+                  >
+                    <Text>{type}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              <Text style={styles.sectionTitle}>Job Mode</Text>
+              <View style={styles.filtersRow}>
+                {JobModedata.map((mode) => (
+                  <TouchableOpacity
+                    key={mode}
+                    onPress={() => togglefilters(jobModeFilter, setJobModeFilter, mode)}
+                    style={[
+                      styles.filterOptionButton,
+                      jobModeFilter.includes(mode) && styles.filterOptionButtonSelected,
+                    ]}
+                  >
+                    <Text>{mode}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+
+              <Button title="Apply Filters" onPress={handleApplyFilters} />
+            </View>
           )}
-          keyExtractor={(item) => item.id.toString()}
-        />
-      </View>
-      
-
-
-
-      {showFilter && (
-        <View style={styles.filtersContainer}>
-          <Text style={styles.sectionTitle}>Experience</Text>
-          <View style={styles.filtersRow}>
-            {expYeardata.map((exp) => (
-              <TouchableOpacity
-                key={exp}
-                onPress={() => togglefilters(expFilter, setExpFilter, exp)}
-                style={[
-                  styles.filterButton,
-                  expFilter.includes(exp) && styles.filterButtonSelected,
-                ]}
-              >
-                <Text>{exp}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-
-          <Text style={styles.sectionTitle}>Job Type</Text>
-          <View style={styles.filtersRow}>
-            {JobTypedata.map((type) => (
-              <TouchableOpacity
-                key={type}
-                onPress={() => togglefilters(jobTypeFilter, setJobTypeFilter, type)}
-                style={[
-                  styles.filterButton,
-                  jobTypeFilter.includes(type) && styles.filterButtonSelected,
-                ]}
-              >
-                <Text>{type}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-
-          <Text style={styles.sectionTitle}>Job Mode</Text>
-          <View style={styles.filtersRow}>
-            {JobModedata.map((mode) => (
-              <TouchableOpacity
-                key={mode}
-                onPress={() => togglefilters(jobModeFilter, setJobModeFilter, mode)}
-                style={[
-                  styles.filterButton,
-                  jobModeFilter.includes(mode) && styles.filterButtonSelected,
-                ]}
-              >
-                <Text>{mode}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-
-          <Button title="Apply Filters" onPress={handleApplyFilters} />
         </View>
-      )}
       </ScrollView>
     </SafeAreaView>
   );
-
 };
 
 export default FindJobScreen;

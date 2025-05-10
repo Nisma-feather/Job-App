@@ -6,7 +6,6 @@ const ExperienceLevelScreen = ({ selected, onSelect }) => {
     'Entry Level',
     'Mid Level',
     'Senior Level',
-    'Executive',
     'Student'
   ];
 

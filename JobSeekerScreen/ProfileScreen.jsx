@@ -3,10 +3,12 @@ import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker'
+
 import { SafeAreaView, ScrollView } from 'react-native-web';
 import Octicons from 'react-native-vector-icons/Octicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Feather from 'react-native-vector-icons/Feather';
+
 const ProfileScreen = () => {
   const navigation = useNavigation();
   const profileImage = null; // Fetch from Firestore if available
@@ -14,53 +16,70 @@ const ProfileScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
-      <View style={{padding:15}}>
-      <View style={styles.profileSection}>
-        <Image
-          source={profileImage ? { uri: profileImage } : require('../assets/icon.png')}
-          style={styles.profileImage}
-        />
-        <TouchableOpacity style={styles.editIcon}>
-          <Ionicons name="pencil" size={20} color="white" />
-        </TouchableOpacity>
-      </View>
+        <View style={{ padding: 15 }}>
+          <View style={styles.profileSection}>
+             <View style={styles.profileImage}>
+             <Ionicons name="person"  color="white" size={50} />
+             </View>
+            
+            {/* <Image
+              source={profileImage ? { uri: profileImage } : <Ionicons name="person" color="white" size={24} />}
+              style={styles.profileImage}
+            /> */}
+            
+          </View>
 
-      <View style={styles.sections}>
-        <TouchableOpacity style={styles.sectionItem} onPress={() => navigation.navigate('PersonalInfo')}>
-        <Octicons name="person-add" color="#6297e0" size={24} />
-          <Text style={styles.sectionText}>Personal Information</Text>
-          <Text style={{color:"#3a7bd6"}}>Add + </Text>
-        </TouchableOpacity>
+          <View style={styles.sections}>
+            <TouchableOpacity style={styles.sectionItem} onPress={() => navigation.navigate('PersonalInfo')}>
+              <View style={styles.headindContainer}>
+                <Octicons name="person-add" color="#6297e0" size={24} style={{}}/>
+                <Text style={styles.sectionText}>Personal Information</Text>
+              </View>
+              <Text style={{ color: "#3a7bd6" }}>Add +</Text>
+            </TouchableOpacity>
 
-        <TouchableOpacity style={styles.sectionItem} onPress={() => navigation.navigate('Education')}>
-        <Octicons name="book" color="#6297e0" size={24} />
-          <Text style={styles.sectionText}>Education Details</Text>
-          <Ionicons name="chevron-forward" size={20} />
-        </TouchableOpacity>
+            <TouchableOpacity style={styles.sectionItem} onPress={() => navigation.navigate('Education')}>
+              <View style={styles.headindContainer}>
+              <Octicons name="book" color="#6297e0" size={24} />
+              <Text style={styles.sectionText}>Education Details</Text>
+              </View>
+              <Text style={{ color: "#3a7bd6" }}>Add +</Text>
+              
+              
+            </TouchableOpacity>
 
-        <TouchableOpacity style={styles.sectionItem} onPress={() => navigation.navigate('Skills')}>
-        <Octicons name="file-badge" color="#6297e0" size={24} />
-          <Text style={styles.sectionText}>Skills</Text>
-          <Ionicons name="chevron-forward" size={20} />
-        </TouchableOpacity>
+            <TouchableOpacity style={styles.sectionItem} onPress={() => navigation.navigate('Skills')}>
+              <View style={styles.headindContainer}>
+              <Octicons name="file-badge" color="#6297e0" size={24} />
+              <Text style={styles.sectionText}>Skills</Text>
+              </View>
+              <Text style={{ color: "#3a7bd6" }}>Add +</Text>
+              
+            </TouchableOpacity>
 
-        <TouchableOpacity style={styles.sectionItem} onPress={() => navigation.navigate('Experience')}>
-        <MaterialCommunityIcons name="hexagon-slice-3" color="#6297e0" size={24} />
-          <Text style={styles.sectionText}>Experience</Text>
-          <Ionicons name="chevron-forward" size={20} />
-        </TouchableOpacity>
+            <TouchableOpacity style={styles.sectionItem} onPress={() => navigation.navigate('Experience')}>
+              <View style={styles.headindContainer}>
+              <MaterialCommunityIcons name="hexagon-slice-3" color="#6297e0" size={24} />
+              <Text style={styles.sectionText}>Experience</Text>
+              </View>
+              <Text style={{ color: "#3a7bd6" }}>Add +</Text>
+              
+            </TouchableOpacity>
 
-        <TouchableOpacity style={styles.sectionItem} onPress={() => navigation.navigate('Projects')}>
-        <Feather name="pie-chart" color="#6297e0" size={24} />
-          <Text style={styles.sectionText}>Projects</Text>
-          <Ionicons name="chevron-forward" size={20} />
-        </TouchableOpacity>
-      </View>
-      </View>
+            <TouchableOpacity style={styles.sectionItem} onPress={() => navigation.navigate('Projects')}>
+              <View style={styles.headindContainer}>
+              <Feather name="pie-chart" color="#6297e0" size={24} />
+              <Text style={styles.sectionText}>Projects</Text>
+              </View>
+              <Text style={{ color: "#3a7bd6" }}>Add +</Text>
+              
+            </TouchableOpacity>
+          </View>
+        </View>
 
       </ScrollView>
     </SafeAreaView>
-    
+
   );
 };
 
@@ -68,8 +87,8 @@ export default ProfileScreen;
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
-  profileSection: { alignItems: 'center', marginVertical: 20 },
-  profileImage: { width: 120, height: 120, borderRadius: 60, backgroundColor: '#ddd' },
+  profileSection: {marginVertical: 10, },
+  profileImage: { width: 90, height: 90, borderRadius: 60,justifyContent:'center',alignItems:'center', backgroundColor: '#d5e1f2' },
   editIcon: {
     position: 'absolute',
     bottom: 0,
@@ -78,20 +97,34 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     padding: 5,
   },
-  sections: { marginTop: 30,
-    gap:15
-   },
+  sections: {
+    marginTop: 30,
+    gap: 15
+  },
   sectionItem: {
     flexDirection: 'row',
-    gap:20,
+    justifyContent: 'space-between', // pushes left and right sections apart
+    alignItems: 'center',
     paddingVertical: 15,
     paddingHorizontal: 15,
-    borderWidth: '1px',
+    borderWidth: 1, // use number, not string
     borderColor: '#f0f5fc',
-    borderRadius:5
+    borderRadius: 5,
+    shadowColor:'#6297e0',
+    shadowOpacity:0.2,
+    shadowOffset:{
+      width:2,
+      height:2
+    }
   },
-  sectionText: { fontSize: 18,
-    color:'#3b4b5e',
-    
-   },
+  headindContainer: {
+    flexDirection: 'row', alignItems: 'center', gap: 10
+
+  },
+  sectionText: {
+    fontSize: 14,
+    color: '#3b4b5e',
+    fontWeight:'bold'
+
+  },
 });

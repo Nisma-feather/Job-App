@@ -10,38 +10,31 @@ import {
   TouchableOpacity,
   Alert,
   ActivityIndicator,
+  Keyboard,
 } from "react-native";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Feather from "react-native-vector-icons/Feather";
-import { Picker } from "@react-native-picker/picker";
 import { auth, db } from "../../firebaseConfig";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 
-
 export default function SkillsUpdateScreen({ navigation }) {
-  const [skills, setSkills] = useState([{ skill: "", level: "" }]);
+  const [skills, setSkills] = useState([]);
+  const [input, setInput] = useState("");
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const [error,setError] = useState('');
+
   const uid = auth.currentUser?.uid;
-  console.log(uid)
- 
-  // Fetch skills data when component mounts
+
   useEffect(() => {
     const fetchSkills = async () => {
-      if (!auth.currentUser) {
-        console.log("no user found")
-      }
-      const uid = auth.currentUser?.uid;
-      console.log("from skills",uid)
       if (!uid) return;
 
       try {
         const userDoc = await getDoc(doc(db, "users", uid));
         if (userDoc.exists()) {
           const userData = userDoc.data();
-          console.log(userData);
-          // Initialize with empty array if no skills data exists
-          const skillsData = userData.skills || [{ skill: "", level: "" }];
+          const skillsData = userData.skills || [];
           setSkills(skillsData);
         }
       } catch (error) {
@@ -55,37 +48,42 @@ export default function SkillsUpdateScreen({ navigation }) {
     fetchSkills();
   }, []);
 
-  function handleChange(field, index, value) {
-    const newSkills = [...skills];
-    newSkills[index][field] = value;
-    setSkills(newSkills);
-  }
-
-  function handleAddInput() {
-    setSkills([...skills, { skill: "", level: "" }]);
-  }
-
-  function handleRemoveSkill(index) {
-    if (skills.length > 1) {
-      const newSkills = [...skills];
-      newSkills.splice(index, 1);
-      setSkills(newSkills);
-    } else {
-      Alert.alert("Cannot remove", "You must have at least one skill");
+  const addSkill = () => {
+    const trimmed = input.trim();
+    if(skills.length >=0){
+      setError('');
     }
+    if (trimmed && !skills.includes(trimmed)) {
+      setSkills([...skills, trimmed]);
+      setInput("");
+      Keyboard.dismiss();
+    }
+  };
+
+  const removeSkill = (index) => {
+    const updatedSkills = [...skills];
+    updatedSkills.splice(index, 1);
+    setSkills(updatedSkills);
+  };
+ function validation(){
+    let valid=true;
+    if(skills.length<=0){
+      setError('Atleast add one skill');
+       valid=false;
+    }
+    else{
+      setError('');
+    }
+    return valid;
+
   }
 
-  async function handleUpdateSkills() {
-    // Validate all fields
-    for (const item of skills) {
-      if (!item.skill.trim() || !item.level) {
-        Alert.alert("Validation Error", "Please fill all fields for all skills");
-        return;
-      }
+  const handleUpdateSkills = async () => {
+    if (!validation()) return;
+    if (skills.length === 0) {
+      Alert.alert("Validation Error", "Please add at least one skill");
+      return;
     }
-
-    const uid = auth.currentUser?.uid;
-    if (!uid) return;
 
     try {
       setUpdating(true);
@@ -101,7 +99,7 @@ export default function SkillsUpdateScreen({ navigation }) {
     } finally {
       setUpdating(false);
     }
-  }
+  };
 
   if (loading) {
     return (
@@ -113,51 +111,41 @@ export default function SkillsUpdateScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ScrollView contentContainerStyle={styles.wrapper}>
+      <ScrollView contentContainerStyle={styles.wrapper} keyboardShouldPersistTaps="handled">
         <Text style={styles.title}>Update Your Skills</Text>
 
-        {skills.map((skill, index) => (
-          <View key={index} style={styles.skillContainer}>
-            <View style={styles.skillInputContainer}>
-              <TextInput
-                placeholder="Enter skill (e.g., React, Python)"
-                value={skill.skill}
-                onChangeText={(value) => handleChange("skill", index, value)}
-                style={styles.input}
-              />
-              
-              <Pressable 
-                onPress={() => handleRemoveSkill(index)}
-                style={styles.removeButton}
-              >
-                <MaterialIcons name="remove-circle" color="#ff4444" size={24} />
+        <View style={styles.inputRow}>
+          <Text style={styles.label}>Enter Skills</Text>
+          <View style={styles.inputContainer}>
+          <TextInput
+            placeholder="Enter a skill"
+            value={input}
+            onChangeText={setInput}
+            onSubmitEditing={addSkill}
+            style={styles.input}
+          />
+          <Pressable onPress={addSkill} style={styles.addButton}>
+            <MaterialIcons name="add-circle" size={28} color="#1967d2" />
+          </Pressable>
+
+          </View>
+          
+        </View>
+
+        <View style={styles.tagContainer}>
+          {skills.map((skill, index) => (
+            <View key={index} style={styles.skillTag}>
+              <Text style={styles.skillText}>{skill}</Text>
+              <Pressable onPress={() => removeSkill(index)}>
+                <MaterialIcons name="close" size={16} color="#fff" />
               </Pressable>
             </View>
+          ))}
+          <Text>{error}</Text>
+        </View>
 
-            <View style={styles.pickerWrapper}>
-              <Picker
-                selectedValue={skill.level}
-                onValueChange={(value) => handleChange("level", index, value)}
-                style={styles.picker}
-                dropdownIconColor="#1967d2"
-              >
-                <Picker.Item label="Select proficiency level" value="" />
-                <Picker.Item label="Beginner" value="beginner" />
-                <Picker.Item label="Intermediate" value="intermediate" />
-                <Picker.Item label="Advanced" value="advanced" />
-                <Picker.Item label="Expert" value="expert" />
-              </Picker>
-            </View>
-          </View>
-        ))}
-
-        <Pressable onPress={handleAddInput} style={styles.addButton}>
-          <MaterialIcons name="add-circle" color="#1967d2" size={24} />
-          <Text style={styles.addButtonText}>Add Another Skill</Text>
-        </Pressable>
-
-        <TouchableOpacity 
-          style={styles.button} 
+        <TouchableOpacity
+          style={styles.saveButton}
           onPress={handleUpdateSkills}
           disabled={updating}
         >
@@ -165,8 +153,8 @@ export default function SkillsUpdateScreen({ navigation }) {
             <ActivityIndicator color="#fff" />
           ) : (
             <>
-              <Text style={styles.buttonText}>Update Skills</Text>
-              <Feather name="check-circle" color="#fff" size={20} style={styles.buttonIcon} />
+              <Text style={styles.saveText}>Update Skills</Text>
+              
             </>
           )}
         </TouchableOpacity>
@@ -176,88 +164,85 @@ export default function SkillsUpdateScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    backgroundColor: "#fff" 
-  },
+  container: { flex: 1, backgroundColor: "#fff" },
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
-  wrapper: { 
+  wrapper: {
     padding: 20,
-    paddingBottom: 40 
   },
-  title: { 
-    fontSize: 20, 
-    fontWeight: "bold", 
-    marginBottom: 20, 
-    textAlign: "center",
-    color: "#333"
-  },
-  skillContainer: {
+  title: {
+    fontSize: 20,
+    fontWeight: "bold",
     marginBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-    paddingBottom: 15,
+    textAlign: "center",
+    color: "#333",
   },
-  skillInputContainer: {
-    flexDirection: "row",
+  inputRow: {
+    
     alignItems: "center",
-    marginBottom: 10,
+    gap: 10,
+    marginBottom: 20,
   },
-  input: { 
+  inputContainer:{
+   flexDirection:'row',
+   alignItems:'center'
+  },
+  input: {
     flex: 1,
-    backgroundColor: "#f8f8f8", 
-    borderRadius: 8, 
-    padding: 12, 
-    fontSize: 14, 
-    borderWidth: 1, 
-    borderColor: "#ddd",
-  },
-  pickerWrapper: { 
-    borderRadius: 8, 
-    borderWidth: 1, 
-    borderColor: "#ddd", 
-    backgroundColor: "#f8f8f8", 
-    overflow: "hidden"
-  },
-  picker: { 
-    height: 50, 
-    width: "100%" 
+    borderWidth: 1,
+    borderColor: "#ccc",
+    backgroundColor: "#f4f6f9",
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 14,
   },
   addButton: {
+    paddingHorizontal: 5,
+  },
+  tagContainer: {
     flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+    marginBottom: 30,
+  },
+  skillTag: {
+    flexDirection: "row",
+    backgroundColor: "#1967d2",
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 20,
     alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    padding: 10,
-    marginVertical: 10,
+    gap: 6,
   },
-  addButtonText: {
-    color: "#1967d2",
-    fontWeight: "500",
+  skillText: {
+    color: "#fff",
+    fontSize: 14,
   },
-  removeButton: {
-    marginLeft: 10,
-  },
-  button: { 
-    backgroundColor: "#1967d2", 
-    borderRadius: 8, 
-    paddingVertical: 14, 
-    alignItems: "center", 
-    marginTop: 20,
+  saveButton: {
+    backgroundColor: "#1967d2",
+    borderRadius: 8,
+    paddingVertical: 14,
     flexDirection: "row",
     justifyContent: "center",
+    alignItems: "center",
     gap: 10,
   },
-  buttonText: { 
-    color: "#fff", 
-    fontWeight: "bold", 
-    fontSize: 16 
+  saveText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
   },
-  buttonIcon: {
+  saveIcon: {
     marginLeft: 5,
   },
+  label: {
+    alignSelf: 'flex-start',
+    fontWeight: '500',
+    marginBottom: 5,
+    marginTop: 15
+  },
+  
 });

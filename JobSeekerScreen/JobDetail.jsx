@@ -16,7 +16,7 @@ const JobDetail = ({ route,navigation }) => {
     const ref = doc(db, 'companies', currentJob.companyUID);
     const companySnap = await getDoc(ref);
     if (companySnap.exists()) {
-      const companyData = await companySnap.data();
+      const companyData = companySnap.data();
       setCompany(companyData);
 
     }

@@ -8,7 +8,7 @@ const JobTypeScreen = ({ selected, onSelect }) => {
     'Contract',
     'Freelance',
     'Internship',
-    'Remote'
+    
   ];
 
   return (

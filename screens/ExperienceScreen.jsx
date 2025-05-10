@@ -12,7 +12,7 @@ import {
 import Foundation from 'react-native-vector-icons/Foundation';
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Feather from "react-native-vector-icons/Feather";
-import DatePicker from "react-native-date-picker";
+// import DatePicker from "react-native-date-picker";
 import { auth, db } from "../firebaseConfig";
 import { setDoc, doc } from "firebase/firestore";
 import { createUserWithEmailAndPassword } from "firebase/auth";

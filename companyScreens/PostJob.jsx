@@ -1,10 +1,10 @@
 import { Picker } from '@react-native-picker/picker';
 import React, { useState } from 'react'
 import { Alert, TouchableOpacity } from 'react-native';
-import { ScrollView, Text, View, StyleSheet } from 'react-native'
-import { SafeAreaView, TextInput } from 'react-native-web'
+import { ScrollView, Text, View, StyleSheet,SafeAreaView, TextInput  } from 'react-native'
+
 import { auth, db } from '../firebaseConfig';
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, collection, doc,getDoc} from 'firebase/firestore';
 import { Ionicons } from '@expo/vector-icons'; import { useNavigation } from '@react-navigation/native';
 
 const PostJob = ({ navigation }) => {
@@ -21,8 +21,13 @@ const PostJob = ({ navigation }) => {
 
   const [salaryPack, setSalaryPack] = useState("");
 
-  const expYeardata = ['', 'Fresher', "0 - 1 year", "2-5 Years", "More than 5 Years", "More than 10 Years"];
-  const JobTypedata = ['', 'Full Time', "Part Time", "Internship"];
+  const expYeardata = ['', 'Fresher', "0 - 1 Year", "2-5 Years", "More than 5 Years", "More than 10 Years"];
+  const JobTypedata = ['', 
+    'Full Time',
+    'Part Time',
+    'Contract',
+    'Freelance',
+    'Internship',];
   const JobModedata = ['', 'Hybrid', "Remote", "OnSite"];
   
 
@@ -30,13 +35,34 @@ const PostJob = ({ navigation }) => {
   const handlePostJob = async () => {
     const companyUID = auth.currentUser?.uid || "vm5dkIUfk0WxgnXT34QBttxA3kV2";
     if (!companyUID) {
-      return
+      console.error("Company UID is required");
+      Alert.alert("Error", "Company UID is required");
+      return;
     }
-  
+
+    console.log(companyUID);
+
+    // Fetch company data
+    let companyName = "Unknown Company";
+    try {
+      const companyRef = doc(db, 'companies', companyUID);
+      const companySnap = await getDoc(companyRef);
+      
+      if (companySnap.exists()) {
+        companyName = companySnap.data().companyName || "Unknown Company";
+      } else {
+        console.warn("Company document not found, using default name");
+      }
+    } catch (companyError) {
+      console.error("Error fetching company data:", companyError);
+      // Continue with default name even if company fetch fails
+    }
 
     try {
+      
       const jobData = {
         companyUID,
+        companyName,
         jobrole,
         vacancies,
         locations,

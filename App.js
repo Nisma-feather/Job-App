@@ -5,10 +5,6 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 // Job Seeker
 import JobSeekerLoginScreen from './screens/JobSeekerLogin';
-import PersonalInfoScreen from './screens/PersonalInfoScreen';
-import HomeScreen from './screens/HomeScreen';
-import EducaionScreen from './screens/EducaionScreen';
-import SkillsScreen from './screens/SkillsScreen';
 import ExperienceScreen from './screens/ExperienceScreen';
 import RoleSelectionScreen from './screens/RoleSelectionScreen';
 import CompanyLogin from './companyScreens/CompanyLogin';
@@ -34,11 +30,8 @@ const JobSeekerStack=()=>{
   
   <Stack.Navigator initialRouteName="JobSeeker Dashboard" options={{headerShown:false}}>
     <Stack.Screen name="Login" component={JobSeekerLoginScreen}/>
-       <Stack.Screen name="SignUp" component={SignupScreen}/>
-      <Stack.Screen name="Personal Information" component={PersonalInfoScreen} />
+      <Stack.Screen name="SignUp" component={SignupScreen}/>
       <Stack.Screen name="JobSeeker Dashboard" component={JobSeekerTab}/>
-      <Stack.Screen name="Education" component={EducaionScreen}/>
-      <Stack.Screen name="Skills" component={SkillsScreen}/>
       <Stack.Screen name="Experience" component={ExperienceScreen}/>
       <Stack.Screen name='Job Details' component={JobDetail}/>
       <Stack.Screen name="Apply Job" component={ApplyJob}/>
@@ -53,7 +46,7 @@ const JobSeekerStack=()=>{
 }
 const CompanyStack=()=>{
   return (
-  <Stack.Navigator initialRouteName='CompanyDashboard'>
+  <Stack.Navigator initialRouteName='CompanySignUp'>
      <Stack.Screen name="CompanyLogin" component={CompanyLogin}/>
      <Stack.Screen name="CompanySignUp" component={CompanySignUp}/>
      <Stack.Screen name='CompanyDashboard' component={CompanyDashboard}/>
@@ -66,7 +59,7 @@ const CompanyStack=()=>{
 export default function App() {
   return (
    <NavigationContainer>
-    <Stack.Navigator initialRouteName='JobSeekerStack' o>
+    <Stack.Navigator initialRouteName='CompanyStack' >
       <Stack.Screen name="Role" component={RoleSelectionScreen}/>
       <Stack.Screen name="JobSeekerStack" component={JobSeekerStack} options={{headerShown:false}}/>
       <Stack.Screen name="CompanyStack" component={CompanyStack} options={{headerShown:false}}/>
