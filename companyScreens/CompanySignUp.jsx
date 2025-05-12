@@ -11,11 +11,11 @@ const db = getFirestore();
 const CompanySignUp = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [companyName, setCompanyName] = useState('');
-  const [startYear, setStartYear] = useState('');
-  const [employeeCount, setEmployeeCount] = useState('');
-  const [locations, setLocations] = useState('');
-  const [basicInfo, setBasicInfo] = useState('');
+  // const [companyName, setCompanyName] = useState('');
+  // const [startYear, setStartYear] = useState('');
+  // const [employeeCount, setEmployeeCount] = useState('');
+  // const [locations, setLocations] = useState('');
+  // const [basicInfo, setBasicInfo] = useState('');
   const [agree, setAgree] = useState(false);
   const [error, setError] = useState({});
 
@@ -41,25 +41,25 @@ const CompanySignUp = ({ navigation }) => {
       valid = false;
     }
 
-    if (!companyName.trim()) {
-      errors.companyNameError = 'Company name is required';
-      valid = false;
-    }
+    // if (!companyName.trim()) {
+    //   errors.companyNameError = 'Company name is required';
+    //   valid = false;
+    // }
 
-    if (!startYear.trim()) {
-      errors.startYearError = 'Start year is required';
-      valid = false;
-    }
+    // if (!startYear.trim()) {
+    //   errors.startYearError = 'Start year is required';
+    //   valid = false;
+    // }
 
-    if (!employeeCount.trim()) {
-      errors.employeeCountError = 'Employee count is required';
-      valid = false;
-    }
+    // if (!employeeCount.trim()) {
+    //   errors.employeeCountError = 'Employee count is required';
+    //   valid = false;
+    // }
 
-    if (!locations.trim()) {
-      errors.locationsError = 'Locations are required';
-      valid = false;
-    }
+    // if (!locations.trim()) {
+    //   errors.locationsError = 'Locations are required';
+    //   valid = false;
+    // }
 
   
 
@@ -72,34 +72,34 @@ const CompanySignUp = ({ navigation }) => {
     return valid;
   };
 
-  const handleSignup = async () => {
-    if (!validate()) return;
+  // const handleSignup = async () => {
+  //   if (!validate()) return;
 
-    try {
-      const userCred = await createUserWithEmailAndPassword(auth, email, password);
-      const uid = userCred.user.uid;
+  //   try {
+  //     const userCred = await createUserWithEmailAndPassword(auth, email, password);
+  //     const uid = userCred.user.uid;
 
-      await setDoc(doc(db, 'users', uid), {
-        email,
-        role: 'company',
-      });
+  //     await setDoc(doc(db, 'users', uid), {
+  //       email,
+  //       role: 'company',
+  //     });
 
-      await setDoc(doc(db, 'companies', uid), {
-        uid,
-        email,
-        companyName,
-        startYear,
-        employeeCount,
-        locations,
-        basicInfo,
-      });
+  //     await setDoc(doc(db, 'companies', uid), {
+  //       uid,
+  //       email,
+  //       companyName,
+  //       startYear,
+  //       employeeCount,
+  //       locations,
+  //       basicInfo,
+  //     });
 
-      Alert.alert('Account Created Successfully');
-      navigation.replace('CompanyLogin');
-    } catch (err) {
-      Alert.alert('Error', err.message);
-    }
-  };
+  //     Alert.alert('Account Created Successfully');
+  //     navigation.replace('CompanyLogin');
+  //   } catch (err) {
+  //     Alert.alert('Error', err.message);
+  //   }
+  // };
 
   return (
     <SafeAreaView >
@@ -126,7 +126,7 @@ const CompanySignUp = ({ navigation }) => {
         <TextInput style={styles.input} value={password} onChangeText={setPassword} secureTextEntry />
         {error.passwordError && <Text style={styles.errorText}>{error.passwordError}</Text>}
 
-        <Text style={styles.label}>Company Name <Text style={styles.required}>*</Text></Text>
+        {/* <Text style={styles.label}>Company Name <Text style={styles.required}>*</Text></Text>
         <TextInput style={styles.input} value={companyName} onChangeText={setCompanyName} />
         {error.companyNameError && <Text style={styles.errorText}>{error.companyNameError}</Text>}
 
@@ -143,7 +143,7 @@ const CompanySignUp = ({ navigation }) => {
         {error.locationsError && <Text style={styles.errorText}>{error.locationsError}</Text>}
 
         <Text style={styles.label}>Basic Info </Text>
-        <TextInput style={styles.input} value={basicInfo} onChangeText={setBasicInfo} multiline />
+        <TextInput style={styles.input} value={basicInfo} onChangeText={setBasicInfo} multiline /> */}
        
 
         <View style={styles.checkboxContainer}>
@@ -154,7 +154,12 @@ const CompanySignUp = ({ navigation }) => {
         </View>
         {error.termsError && <Text style={styles.errorText}>{error.termsError}</Text>}
 
-        <TouchableOpacity style={styles.signUpButton} onPress={handleSignup}>
+        <TouchableOpacity style={styles.signUpButton} onPress={()=>{
+          if(!validate()){
+            return
+          }
+          navigation.navigate('Company Details', {email:email,password:password})
+        }}>
           <Text style={styles.signUpButtonText}>Sign Up</Text>
         </TouchableOpacity>
       </View>
@@ -259,5 +264,11 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginBottom: 10,
     marginLeft: 10,
+  },
+  label: {
+    alignSelf: 'flex-start',
+    fontWeight: '500',
+    marginBottom: 5,
+    marginTop: 15
   },
 });

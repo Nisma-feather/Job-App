@@ -18,6 +18,8 @@ import JobTypeScreen from './screens/UserInterest';
 import SignupScreen from './screens/SignupScreen';
 import BasicDetailsScreen from './screens/BasicDetailsScreen';
 import UserInterestForm from './screens/UserInterest';
+import CompanyDetails from './companyScreens/CompanyDetails';
+
 
 
 
@@ -28,7 +30,7 @@ const JobSeekerStack=()=>{
   return(
 
   
-  <Stack.Navigator initialRouteName="JobSeeker Dashboard" options={{headerShown:false}}>
+  <Stack.Navigator initialRouteName="Login" options={{headerShown:false}}>
     <Stack.Screen name="Login" component={JobSeekerLoginScreen}/>
       <Stack.Screen name="SignUp" component={SignupScreen}/>
       <Stack.Screen name="JobSeeker Dashboard" component={JobSeekerTab}/>
@@ -38,7 +40,8 @@ const JobSeekerStack=()=>{
       <Stack.Screen name='Job Type' component={JobTypeScreen}/>
       <Stack.Screen name="Basic Info" component={BasicDetailsScreen}/>
       <Stack.Screen name="User Interest" component={UserInterestForm}/>
-    
+
+  
       <Stack.Screen name="Application successfull" component={JobApplicationSuccess}/>
       
   </Stack.Navigator>
@@ -47,10 +50,13 @@ const JobSeekerStack=()=>{
 const CompanyStack=()=>{
   return (
   <Stack.Navigator initialRouteName='CompanySignUp'>
+    <Stack.Screen name='Company Details' component={CompanyDetails}/>
      <Stack.Screen name="CompanyLogin" component={CompanyLogin}/>
      <Stack.Screen name="CompanySignUp" component={CompanySignUp}/>
      <Stack.Screen name='CompanyDashboard' component={CompanyDashboard}/>
      <Stack.Screen name="Job Post Success" component={JobPostSucessScreen}/>
+     
+     
 
   </Stack.Navigator>
   );
@@ -59,7 +65,7 @@ const CompanyStack=()=>{
 export default function App() {
   return (
    <NavigationContainer>
-    <Stack.Navigator initialRouteName='CompanyStack' >
+    <Stack.Navigator initialRouteName='JobSeekerStack' >
       <Stack.Screen name="Role" component={RoleSelectionScreen}/>
       <Stack.Screen name="JobSeekerStack" component={JobSeekerStack} options={{headerShown:false}}/>
       <Stack.Screen name="CompanyStack" component={CompanyStack} options={{headerShown:false}}/>

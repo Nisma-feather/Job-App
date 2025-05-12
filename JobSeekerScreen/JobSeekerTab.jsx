@@ -15,6 +15,7 @@ import JobDetail from "./JobDetail";
 import SkillsUpdateScreen from "./ProfileScreens/SkillsScreen";
 import ApplyJob from "./ApplyJob";
 import JobCard from "./JobCard";
+import CompanyCard from "./CompanyCard";
 
 
 
@@ -64,7 +65,7 @@ const JobStack=()=>{
   return(
   <Stack.Navigator options={{headerShown:'false'}}>
     <Stack.Screen name="Find Job" component={FindJobScreen}/>
-   
+    <Stack.Screen name="Company Page" component={CompanyCard}/>
     <Stack.Screen name="Job Details" component={JobDetail}/>
     <Stack.Screen name="Apply Job" component={ApplyJob}/>
   </Stack.Navigator>

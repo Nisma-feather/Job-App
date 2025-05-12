@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import dummyimg from "../assets/icon.png"
+import React, { useEffect, useState, useCallback } from 'react';
+import dummyimg from "../assets/icon.png";
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {
   SafeAreaView,
   Text,
@@ -18,38 +19,42 @@ import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, whe
 import { auth, db } from '../firebaseConfig';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Feather from 'react-native-vector-icons/Feather';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
-
 const FindJobScreen = ({navigation}) => {
+  const dummyimg = require('../assets/logo.png');
   const [jobs, setJobs] = useState([]);
   const [filteredJobs, setFilteredJobs] = useState([]);
+  const [originalJobs, setOriginalJobs] = useState([]); // Store original jobs
+  const [originalCompanies, setOriginalCompanies] = useState([]); // Store original companies
   const [showFilter, setShowFilters] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [locationQuery, setLocationQuery] = useState('');
   const [expFilter, setExpFilter] = useState([]);
   const [jobTypeFilter, setJobTypeFilter] = useState([]);
   const [jobModeFilter, setJobModeFilter] = useState([]);
-  const [bookmarkJobs,setBookmarkJobs]=useState([]);
-  const [options,setOptions] = useState("");
-  
+  const [bookmarkJobs, setBookmarkJobs] = useState([]);
+  const [options, setOptions] = useState("companies");
+  const [showOption, setShowOption] = useState(false);
+  const [companyList, setCompanyList] = useState([]);
+  const [searchTimeout, setSearchTimeout] = useState(null);
 
+  const optionData = ["jobs", 'companies'];
   const expYeardata = ['Fresher', '0 - 1 year', '2-5 Years', 'More than 5 Years', 'More than 10 Years'];
   const JobTypedata = ['Full Time', 'Part Time', 'Internship'];
   const JobModedata = ['Hybrid', 'Remote', 'Offline'];
-  const uid=auth.currentUser?.uid;
+  const uid = auth.currentUser?.uid;
 
-  const fetchBookMarks=async()=>{
-    const q=query((collection(db,'bookmarks')),where("userId","==",uid))
-    const bookmarkSnap=await getDocs(q);
-
-    const bookmarks=bookmarkSnap.docs.map((bookmark)=>bookmark.data().jobId);
+  // Fetch bookmarks
+  const fetchBookMarks = async () => {
+    const q = query(collection(db, 'bookmarks'), where("userId", "==", uid));
+    const bookmarkSnap = await getDocs(q);
+    const bookmarks = bookmarkSnap.docs.map((bookmark) => bookmark.data().jobId);
     setBookmarkJobs(bookmarks);
+  };
 
-  }
-
+  // Fetch jobs with original data storage
   const fetchJobs = async () => {
     try {
       const q = collection(db, 'jobs');
@@ -58,41 +63,55 @@ const FindJobScreen = ({navigation}) => {
       querySnap.forEach((doc) => {
         fetchedJobs.push({ id: doc.id, ...doc.data() });
       });
-      // for (const jobDoc of querySnap.docs) {
-      //   const jobdata = jobDoc.data();
-  
-      //   let companyName = 'Unknown Company';
-        
-  
-       
-          
-      //     const companyRef = doc(db, 'companies', jobdata.companyUID);
-      //     console.log(companyRef)
-      //     const companySnap = await getDoc(companyRef);
-      //     console.log(companySnap.data());
-      //     if (companySnap.exists()) {
-           
-      //       companyName = companySnap.data().companyName || 'Unknown Company';
-      //     }
-        
-  
-      //   fetchedJobs.push({ id: jobDoc.id, ...jobdata, companyName });
-      // }
       setJobs(fetchedJobs);
+      setOriginalJobs(fetchedJobs); // Store original data
       setFilteredJobs(fetchedJobs);
     } catch (e) {
       console.log(e);
     }
   };
- console.log(filteredJobs);
-  useEffect(() => {
-    fetchJobs();
-    fetchBookMarks();
-  }, [uid]);
 
+  // Fetch companies with original data storage
+  const fetchCompanies = async () => {
+    const ref = collection(db, 'companies');
+    const snapData = await getDocs(ref);
+    const fetchedCompanies = [];
+    snapData.forEach((docs) => {
+      fetchedCompanies.push({ id: docs.id, ...docs.data() });
+    });
+    setCompanyList(fetchedCompanies);
+    setOriginalCompanies(fetchedCompanies); // Store original data
+  };
+
+  useEffect(() => {
+    if (options === 'jobs') {
+      fetchJobs();
+    } else if (options === 'companies') {
+      fetchCompanies();
+    }
+    fetchBookMarks();
+  }, [uid, options]);
+
+  // Debounced search handler
   const handlesearch = (value) => {
     setSearchQuery(value);
-    applyFilters();
+    
+    // Clear previous timeout
+    if (searchTimeout) clearTimeout(searchTimeout);
+    
+    // Set new timeout
+    setSearchTimeout(setTimeout(() => {
+      if (value === '') {
+        // Reset to original data when search is cleared
+        if (options === 'jobs') {
+          setFilteredJobs(originalJobs);
+        } else {
+          setCompanyList(originalCompanies);
+        }
+      } else {
+        applyFilters();
+      }
+    }, 300));
   };
 
   const handleLocationSearch = (value) => {
@@ -108,62 +127,84 @@ const FindJobScreen = ({navigation}) => {
     }
   };
 
-  const applyFilters = () => {
-    let updatedJobs = [...jobs];
+  // Improved applyFilters function
+  const applyFilters = useCallback(() => {
+    if (options === 'jobs') {
+      let updatedJobs = [...originalJobs]; // Always filter from original data
 
-    if (searchQuery) {
-      updatedJobs = updatedJobs.filter((job) =>
-        job.jobrole?.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+      // Apply search filter
+      if (searchQuery) {
+        updatedJobs = updatedJobs.filter((job) =>
+          job.jobrole?.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      }
+
+      // Apply location filter
+      if (locationQuery) {
+        updatedJobs = updatedJobs.filter((job) =>
+          job.locations?.toLowerCase().includes(locationQuery.toLowerCase())
+        );
+      }
+
+      // Apply experience filter
+      if (expFilter.length > 0) {
+        updatedJobs = updatedJobs.filter((job) => expFilter.includes(job.expYear));
+      }
+
+      // Apply job type filter
+      if (jobTypeFilter.length > 0) {
+        updatedJobs = updatedJobs.filter((job) => jobTypeFilter.includes(job.jobType));
+      }
+
+      // Apply job mode filter
+      if (jobModeFilter.length > 0) {
+        updatedJobs = updatedJobs.filter((job) => jobModeFilter.includes(job.jobMode));
+      }
+
+      setFilteredJobs(updatedJobs);
+    } else if (options === 'companies') {
+      let updatedCompanies = [...originalCompanies]; // Always filter from original data
+
+      // Apply search filter
+      if (searchQuery) {
+        updatedCompanies = updatedCompanies.filter((company) =>
+          company.companyName?.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+      }
+
+      // Apply location filter
+      if (locationQuery) {
+        updatedCompanies = updatedCompanies.filter((company) =>
+          company.locations?.toLowerCase().includes(locationQuery.toLowerCase())
+        );
+      }
+
+      setCompanyList(updatedCompanies);
     }
-
-    if (locationQuery) {
-      updatedJobs = updatedJobs.filter((job) =>
-        job.locations?.toLowerCase().includes(locationQuery.toLowerCase())
-      );
-    }
-
-    if (expFilter.length > 0) {
-      updatedJobs = updatedJobs.filter((job) => expFilter.includes(job.expYear));
-    }
-
-    if (jobTypeFilter.length > 0) {
-      updatedJobs = updatedJobs.filter((job) => jobTypeFilter.includes(job.jobType));
-    }
-
-    if (jobModeFilter.length > 0) {
-      updatedJobs = updatedJobs.filter((job) => jobModeFilter.includes(job.jobMode));
-    }
-
-    setFilteredJobs(updatedJobs);
-  };
+  }, [options, originalJobs, originalCompanies, searchQuery, locationQuery, expFilter, jobTypeFilter, jobModeFilter]);
 
   const handleApplyFilters = () => {
     applyFilters();
     setShowFilters(false);
   };
-  const handletoggleBookmark=async(jobId)=>{
-    try
-    {
-      const q=query(collection(db,'bookmarks'),where('userId','==',uid),where('jobId','==',jobId));
-    const bookmarkSnap=await getDocs(q);
 
+  // Reset all filters
+  const resetAllFilters = () => {
+    setSearchQuery('');
+    setLocationQuery('');
+    setExpFilter([]);
+    setJobTypeFilter([]);
+    setJobModeFilter([]);
     
-    if(!bookmarkSnap.empty){
-      await deleteDoc(doc(db,'bookmarks',bookmarkSnap.docs[0].id));
-      const newBookmark=bookmarkJobs.filter((id)=>id !== jobId);
-      setBookmarkJobs(newBookmark)
+    if (options === 'jobs') {
+      setFilteredJobs(originalJobs);
+    } else {
+      setCompanyList(originalCompanies);
     }
-    else{
-      await addDoc(collection(db,'bookmarks'),{userId:uid,jobId});
-      setBookmarkJobs([...bookmarkJobs,jobId])
-     
-    }
-  }
-  catch(e){
-    console.log(e);
-  }
-  }
+  };
+
+  // ... rest of your component code (styles, render method, etc.)
+  
   const styles = StyleSheet.create({
     container: {
       padding: 16,
@@ -206,24 +247,6 @@ const FindJobScreen = ({navigation}) => {
     listJobs: {
       padding: 15,
       marginTop: 16,
-    },
-    jobItem: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      padding: 16,
-      borderRadius: 12,
-      backgroundColor: '#fff',
-      shadowColor: '#000',
-      shadowOffset: { width: 0, height: 1 },
-      shadowOpacity: 0.1,
-      shadowRadius: 4,
-      elevation: 2,
-      marginBottom: 12,
-    },
-    jobTitle: {
-      fontSize: 16,
-      fontWeight: '700',
-      color: '#333',
     },
     companyName: {
       fontSize: 14,
@@ -276,8 +299,41 @@ const FindJobScreen = ({navigation}) => {
       alignSelf: 'flex-end',
       marginBottom: 10,
     },
+    companyCard:{
+        padding: 10,
+        borderRadius: 6,
+        backgroundColor: '#fff',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 2,
+        marginBottom: 12,
+        gap:15
+
+    },
+    jobTitle: {
+      fontSize: 15,
+      fontWeight: '700',
+      color: '#555',
+    },
+    yearStyle:{
+   
+        fontSize: 13,
+        color: '#666',
+        color:"#5c88ea",
+        marginBottom: 4,
+      
+    },
+    logo: {
+      flexDirection:'row',
+      width: 50,
+      height: 50,
+      
+    }
   });
 
+console.log(companyList)
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView style={{width: "100%"}}>
@@ -291,18 +347,40 @@ const FindJobScreen = ({navigation}) => {
               style={styles.inputIcon}
             />
             <TextInput
-              placeholder="Search Jobs"
+              placeholder={options==='jobs'?'Search Jobs':'Search Companies'}
               value={searchQuery}
               onChangeText={handlesearch}
               style={styles.inputField}
             />
-            <Pressable 
+            {/* <Pressable 
               onPress={() => setShowFilters(true)} 
               style={{position: 'absolute', right: 10, top: 14}}
             >
               <Ionicons name="options" color="#000" size={24} />
+            </Pressable> */}
+            <Pressable style={{position: 'absolute', right: 10, top: 14}} onPress={()=>setShowOption(true)}>
+              
+              <MaterialCommunityIcons name="arrow-down-drop-circle" color="#000" size={24} />
+              
             </Pressable>
+           
           </View>
+          {
+              showOption &&
+              <View style={{gap:5,backgroundColor:"lightblue",positon:'absolute',width:80,height:'auto',right:10}}>
+              {
+                optionData.map((option,idx)=>{
+                  return(
+               
+                    <TouchableOpacity key={idx} onPress={()=>{setOptions(option);setShowOption(false)}}>
+                      <Text style={{color:'white'}}>{option}</Text>
+                    </TouchableOpacity>
+                  )
+                   
+                })
+              }
+              
+            </View>}
 
           {/* Location Input */}
           <View style={styles.inputWrapper}>
@@ -327,17 +405,62 @@ const FindJobScreen = ({navigation}) => {
           >
             <Text style={styles.filterButtonText}>Apply Filters</Text>
           </TouchableOpacity>
+      {options==='jobs' &&
+       
+      <View style={styles.listJobs}>
+     <FlatList
+     data={filteredJobs}
+     renderItem={({ item }) => (
+       <JobCard item={item} navigation={navigation}/>
+      )}
+      keyExtractor={(item) => item.id.toString()}
+      />
+     </View>
+  }
+   {options==='companies' &&
+    <View>
+       <FlatList data={companyList}
+                  renderItem={({item})=>(
+                   <Pressable style={styles.companyCard} onPress={()=>navigation.navigate("Company Page",{
+         companyUID:item.id   
+                   })}>
+                     <View style={{flexDirection:'row',gap:10}}>
+                     <View style={{width:40,height:40,borderWidth:1,borderColor:'#dedede',justifyContent:'center',alignItems:'center',borderRadius:6}}>
+                               <Image source={dummyimg} style={styles.logo} />
+                               </View>
+                               
+                         <View style={{gap:6}}>
+                            <Text style={styles.jobTitle}>{item.companyName}</Text>
+                            <Text style={styles.yearStyle}>Established in {item.startYear}</Text>
 
-          {/* Jobs List */}
-          <View style={styles.listJobs}>
-            <FlatList
-              data={filteredJobs}
-              renderItem={({ item }) => (
-                <JobCard item={item} navigation={navigation}/>
-              )}
-              keyExtractor={(item) => item.id.toString()}
-            />
+                         </View>
+
+                     </View>
+                            
+
+         
+
+                     
+                    
+                      <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:"center",height:35,borderTopColor:'#dedede',borderTopWidth:1}}>
+          <View style={styles.metaRow}>
+            <Entypo name="location-pin" color="#9ca4b5" size={18} />
+            <Text style={styles.metaText}>{item.locations}</Text>
           </View>
+          
+
+        </View>
+                   </Pressable>
+                     
+                     
+
+                  )
+                    
+                  }/>
+      </View>
+   
+   }
+         
 
           {/* Filter Panel */}
           {showFilter && (
