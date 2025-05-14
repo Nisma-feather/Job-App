@@ -158,18 +158,21 @@ const HomeScreen = ({ navigation }) => {
   return (
     <ScrollView style={{ flex: 1, backgroundColor: '#F4F7FE'}}>
       {/* Top Bar */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, justifyContent: 'space-between' }}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16,gap:12}}>
         <Ionicons name="menu" size={24} />
-        <Pressable onPressIn={() => navigation.navigate("Find Job")}>
+        <Pressable onPressIn={() => navigation.navigate("Find Job")} style={{flex: 1,}}>
           <TextInput
             placeholder="Search Area"
             editable={false}
             style={{
-              flex: 1,
+              
               backgroundColor: 'white',
-              borderRadius: 10,
-              marginHorizontal: 12,
-              paddingHorizontal: 10,
+              borderRadius: 20,
+        
+              paddingVertical:10,
+              paddingHorizontal: 12,
+              
+
             }}
           />
         </Pressable>
@@ -184,7 +187,10 @@ const HomeScreen = ({ navigation }) => {
         </View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           {jobs.map(job => (
-            <JobCard key={job.id} item={job} navigation={navigation} />
+            <View style={{marginRight:10}}>
+               <JobCard key={job.id} item={job} navigation={navigation}/>
+            </View>
+            
           ))}
         </ScrollView>
       </View>
@@ -217,7 +223,10 @@ const HomeScreen = ({ navigation }) => {
       <View style={{ paddingHorizontal: 16 }}>
         <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>Jobs for you</Text>
         {jobsForYou.map(job => (
-          <JobCard key={job.id} item={job} navigation={navigation} />
+       
+             <JobCard key={job.id} item={job} navigation={navigation}/>
+             
+         
         ))}
       </View>
     </ScrollView>

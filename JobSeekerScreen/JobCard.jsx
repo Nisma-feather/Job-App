@@ -161,6 +161,7 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#7a86a1',
     marginLeft: 4,
+    
   },
   bookmarkIcon: {
    marginRight:8

@@ -11,6 +11,7 @@ const db = getFirestore();
 const CompanySignUp = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [cpassword, setCPassword]= useState('');
   // const [companyName, setCompanyName] = useState('');
   // const [startYear, setStartYear] = useState('');
   // const [employeeCount, setEmployeeCount] = useState('');
@@ -39,6 +40,15 @@ const CompanySignUp = ({ navigation }) => {
     } else if (!/^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&]).{8,}$/.test(password)) {
       errors.passwordError = 'Password must be 8+ characters with special character & number';
       valid = false;
+    } 
+
+    if(!cpassword.trim()){
+      valid=false
+      errors.cpasswordError='Enter Confirm Password'
+    }
+    else if(password !== cpassword){
+      valid=false
+      errors.cpasswordError="password and confirm password not matching"
     }
 
     // if (!companyName.trim()) {
@@ -125,6 +135,10 @@ const CompanySignUp = ({ navigation }) => {
         <Text style={styles.label}>Password <Text style={styles.required}>*</Text></Text>
         <TextInput style={styles.input} value={password} onChangeText={setPassword} secureTextEntry />
         {error.passwordError && <Text style={styles.errorText}>{error.passwordError}</Text>}
+
+        <Text style={styles.label}>Confirm Password <Text style={styles.required}>*</Text></Text>
+        <TextInput style={styles.input} value={cpassword} onChangeText={setCPassword} secureTextEntry />
+        {error.cpasswordError && <Text style={styles.errorText}>{error.cpasswordError}</Text>}
 
         {/* <Text style={styles.label}>Company Name <Text style={styles.required}>*</Text></Text>
         <TextInput style={styles.input} value={companyName} onChangeText={setCompanyName} />

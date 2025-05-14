@@ -93,7 +93,7 @@ const JobDetail = ({ route,navigation }) => {
                   <Text style={styles.iconText}>Website</Text>
                 </View>
 
-                <Text>Website link</Text>
+                <Text>Website </Text>
               </View>
               <View style={styles.companyIconlist}>
                 <View style={styles.companyIconpart}>
@@ -171,6 +171,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#ddd',
     marginVertical: 4,
+   
   },
   tags: {
     flexDirection: 'row',

@@ -1,7 +1,7 @@
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import React, { useState } from 'react'
-import { TextInput,SafeAreaView,View, Pressable, Alert,Button,Text} from 'react-native';
-
+import { TextInput,SafeAreaView,View, Pressable, Alert,Button,Text, StyleSheet,TouchableOpacity} from 'react-native';
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { auth,db } from '../firebaseConfig';
 import { doc, getDoc, getFirestore } from 'firebase/firestore';
 
@@ -45,10 +45,26 @@ const CompanyLogin = ({navigation}) => {
     }
   return (
    <SafeAreaView>
-    <View>
-        <TextInput onChangeText={setEmail} placeholder='Email' value={email}/>
-        <TextInput onChangeText={setPassword} placeholder='Password' value={password} secureTextEntry/>
+    <View style={styles.container}>
+        <View style={styles.logoContainer}>
+                  <View style={styles.logoOuter}>
+                    <MaterialIcons name="double-arrow" color="#fff" size={28} />
+                  </View>
+                  <View>
+                    <Text style={styles.logoText}>Karier</Text>
+                    <Text style={styles.logoSubText}>Job Portal App</Text>
+                  </View>
+        </View>
+         <Text style={styles.label}>Email<Text style={styles.required}>*</Text></Text>
+        <TextInput style={styles.input} onChangeText={setEmail} placeholder='Email'/>
+        <Text  style={styles.label}>Password<Text style={styles.required}>*</Text></Text>
+        <TextInput style={styles.input} onChangeText={setPassword} placeholder='Password' value={password} secureTextEntry/>
         <Button onPress={handleLogin} title='Login'/>
+        <TouchableOpacity onPress={handleLogin} style={styles.LoginButton}>
+            <Text style={styles.LoginButtonText}>
+                Login
+            </Text>
+        </TouchableOpacity>
         <Text>Don't have an account ?
             <Pressable onPress={()=>navigation.navigate("CompanySignUp")}>
                 <Text>Creat one </Text>
@@ -61,3 +77,61 @@ const CompanyLogin = ({navigation}) => {
 }
 
 export default CompanyLogin
+
+const styles=StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+        paddingHorizontal: 24,
+      },
+    logoContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 10,
+        marginVertical: 20,
+      },
+      required:{
+        color:"#ff2121"
+      },
+      logoOuter: {
+        backgroundColor: '#1967d2',
+        width: 50,
+        height: 50,
+        borderRadius: 12,
+        justifyContent: 'center',
+        alignItems: 'center',
+      },
+      logoText: {
+        color: '#1967d2',
+        fontSize: 22,
+        fontWeight: 'bold',
+      },
+      logoSubText: {
+        color: '#666',
+        fontSize: 12,
+      },
+      label: {
+        fontSize: 14,
+        fontWeight: '500',
+        marginBottom: 4,
+      },
+      input: {
+        backgroundColor: '#e6eefa',
+        borderRadius: 8,
+        paddingHorizontal: 16,
+        paddingVertical: 10,
+        marginBottom: 16,
+      },
+      LoginButton: {
+        backgroundColor: '#2563EB',
+        paddingVertical: 14,
+        borderRadius: 8,
+        marginBottom: 16,
+      },
+      LoginButtonText: {
+        color: '#fff',
+        fontWeight: '600',
+        textAlign: 'center',
+      },
+})
