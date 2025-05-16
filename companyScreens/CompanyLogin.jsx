@@ -44,7 +44,7 @@ const CompanyLogin = ({navigation}) => {
        }
     }
   return (
-   <SafeAreaView>
+   <SafeAreaView style={{flex:1}}>
     <View style={styles.container}>
         <View style={styles.logoContainer}>
                   <View style={styles.logoOuter}>
@@ -59,15 +59,15 @@ const CompanyLogin = ({navigation}) => {
         <TextInput style={styles.input} onChangeText={setEmail} placeholder='Email'/>
         <Text  style={styles.label}>Password<Text style={styles.required}>*</Text></Text>
         <TextInput style={styles.input} onChangeText={setPassword} placeholder='Password' value={password} secureTextEntry/>
-        <Button onPress={handleLogin} title='Login'/>
+     
         <TouchableOpacity onPress={handleLogin} style={styles.LoginButton}>
             <Text style={styles.LoginButtonText}>
                 Login
             </Text>
         </TouchableOpacity>
-        <Text>Don't have an account ?
+        <Text style={styles.textCenter}>Don't have an account ?
             <Pressable onPress={()=>navigation.navigate("CompanySignUp")}>
-                <Text>Creat one </Text>
+                <Text style={{color:'blue'}}> Creat one </Text>
             </Pressable>
         </Text>
     </View>
@@ -93,6 +93,10 @@ const styles=StyleSheet.create({
       },
       required:{
         color:"#ff2121"
+      },
+      textCenter:{
+        textAlign:'center'
+
       },
       logoOuter: {
         backgroundColor: '#1967d2',
@@ -127,7 +131,7 @@ const styles=StyleSheet.create({
         backgroundColor: '#2563EB',
         paddingVertical: 14,
         borderRadius: 8,
-        marginBottom: 16,
+        marginVertical:10
       },
       LoginButtonText: {
         color: '#fff',

@@ -4,6 +4,10 @@ import PostJob from "./PostJob";
 import CompanyProfile from "./CompanyProfile";
 import Notifications from "./NotificationScreen";
 import ViewJobApplications, { ApplicationsList } from "./ViewJobApplications";
+import { Component } from "react";
+import CompanyProfileEdit from "./CompanyProfileEdit";
+import PostJobHome from "./PostJobHome";
+import PostJobEdit from "./PostJobEdit";
 
 const Tab=createBottomTabNavigator();
 const Stack=createNativeStackNavigator();
@@ -14,9 +18,9 @@ const CompanyDashboard = () => {
     <Tab.Navigator screenOptions={{
       tabBarActiveTintColor:'blue',
       tabBarInactiveTintColor:"gray"
-  }} initialRouteName="View Applicatons">
-      <Tab.Screen name="company Profile" component={CompanyProfile}/>
-      <Tab.Screen name="Post Jobs" component={PostJob}/>
+  }} initialRouteName="Posted Jobs">
+      <Tab.Screen name="company Profile" component={CompanyProfileStack}/>
+      <Tab.Screen name="Posted Jobs" component={CompanyPostJobStack}/>
       <Tab.Screen name="notfication" component={Notifications}/>
       <Tab.Screen name="View Applicatons" component={JobApplicationStack}/>
       
@@ -32,6 +36,28 @@ const JobApplicationStack=()=>{
     
     </Stack.Navigator>
      
+  )
+}
+
+
+const CompanyProfileStack=()=>{
+  return(
+    <Stack.Navigator>
+       <Stack.Screen name="Profile" component={CompanyProfile}/>
+       <Stack.Screen name="Profile edit" component={CompanyProfileEdit}/>
+    </Stack.Navigator>
+  
+  )
+}
+const CompanyPostJobStack=()=>{
+  return(
+    <Stack.Navigator>
+      <Stack.Screen name="Post Job HomeScreen" component={PostJobHome}/>
+      <Stack.Screen name="Post Job" component={PostJob}/>
+      <Stack.Screen name="Edit Job" component={PostJobEdit}/>
+
+    </Stack.Navigator>
+    
   )
 }
 export default CompanyDashboard
