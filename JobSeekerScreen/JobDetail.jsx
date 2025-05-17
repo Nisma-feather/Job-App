@@ -9,6 +9,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 const JobDetail = ({ route,navigation }) => {
   const { currentJob } = route.params;
+  console.log(currentJob.companyUID)
   const [company, setCompany] = useState({})
   const [activeTab, setActiveTab] = useState('description');
 
@@ -135,7 +136,10 @@ const JobDetail = ({ route,navigation }) => {
 
       {/* Bottom Button */}
       <View style={styles.bottomButton} >
-        <TouchableOpacity style={styles.applyBtn} onPress={()=>navigation.navigate("Apply Job")}>
+        <TouchableOpacity style={styles.applyBtn} onPress={()=> navigation.navigate("Apply Job", {
+  JobId: currentJob.id,
+  companyUID: currentJob.companyUID
+})}>
           <Text style={styles.applyText}>Apply This Job</Text>
         </TouchableOpacity>
       </View>

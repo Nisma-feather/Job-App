@@ -18,6 +18,7 @@ const PostJob = ({ navigation }) => {
   const [jobType, setJobType] = useState("");
   const [jobMode, setJobMode] = useState("");
   const [skillsInput, setSkillsInput] = useState('');
+  const [errors, setErrors] = useState({});
 
   const [salaryPack, setSalaryPack] = useState("");
 
@@ -29,20 +30,33 @@ const PostJob = ({ navigation }) => {
     'Freelance',
     'Internship',];
   const JobModedata = ['', 'Hybrid', "Remote", "OnSite"];
+  const companyUID = "vm5dkIUfk0WxgnXT34QBttxA3kV2";
   
-
+  const validateFields = () => {
+    const newErrors = {};
+    if (!jobrole?.trim()) newErrors.jobrole = 'Job role is required';
+    if (!locations?.trim()) newErrors.locations = 'Location is required';
+    if (!skillsInput.trim()) newErrors.skillsRequired = 'Skills are required';
+    if (!jobType?.trim()) newErrors.jobType = 'Job type is required';
+    if (!jobMode?.trim()) newErrors.jobMode = 'Job mode is required';
+    if (!expYear?.trim()) newErrors.expYear = 'Experience level is required';
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handlePostJob = async () => {
-    const companyUID = auth.currentUser?.uid || "vm5dkIUfk0WxgnXT34QBttxA3kV2";
+   
     if (!companyUID) {
       console.error("Company UID is required");
       Alert.alert("Error", "Company UID is required");
       return;
     }
 
-    console.log(companyUID);
+   
 
-    // Fetch company data
+    if (!validateFields()) return;
+     
+       
     let companyName = "Unknown Company";
     try {
       const companyRef = doc(db, 'companies', companyUID);
@@ -91,42 +105,44 @@ const PostJob = ({ navigation }) => {
   }
 console.log(skillsInput)
 
-
+console.log(companyUID);
   return (
     <SafeAreaView style={styles.formContainer}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
-        <Text style={styles.label}>Job Role</Text>
+        <Text style={styles.label}>Job Role<Text style={styles.required}>*</Text></Text>
         <TextInput
           style={styles.input}
-          placeholder="Type Job Role"
+          
           placeholderTextColor="#999"
           value={jobrole}
           onChangeText={setJobRole}
         />
+         {errors.jobrole && <Text style={styles.errorText}>{errors.jobrole}</Text>}
 
         <Text style={styles.label}>No of Vacancies</Text>
         <TextInput
           style={styles.input}
-          placeholder="Type vacancies"
+        
           placeholderTextColor="#999"
           value={vacancies}
           onChangeText={setVacancies}
           keyboardType="numeric"
         />
 
-        <Text style={styles.label}>Locations</Text>
+        <Text style={styles.label}>Locations<Text style={styles.required}>*</Text></Text>
         <TextInput
           style={styles.input}
-          placeholder="Type Job Location"
+         
           placeholderTextColor="#999"
           value={locations}
           onChangeText={setlocations}
         />
+        {errors.locations && <Text style={styles.errorText}>{errors.locations}</Text>}
 
         <Text style={styles.label}>Requirements</Text>
         <TextInput
           style={styles.textArea}
-          placeholder="Enter requirements (one per line)"
+         
           placeholderTextColor="#999"
           value={requiremnts}
           onChangeText={setRequiremnts}
@@ -136,16 +152,17 @@ console.log(skillsInput)
         <Text style={styles.label}>Skills Required</Text>
         <TextInput
           style={styles.input}
-          placeholder="Skills Required (e.g., React, JavaScript, Node)"
+         
           value={skillsInput}
           onChangeText={setSkillsInput}
         />
+         {errors.skillsRequired && <Text style={styles.errorText}>{errors.skillsRequired}</Text>}
 
 
         <Text style={styles.label}>Roles & Responsibilities</Text>
         <TextInput
           style={styles.textArea}
-          placeholder="Enter roles & responsibilities (one per line)"
+        
           placeholderTextColor="#999"
           value={roleRes}
           onChangeText={setRoleRes}
@@ -153,37 +170,41 @@ console.log(skillsInput)
           numberOfLines={4}
         />
 
-        <Text style={styles.label}>Experience Level</Text>
+        <Text style={styles.label}>Experience Level <Text style={styles.required}>*</Text></Text>
         <View style={styles.pickerWrapper}>
-          <Picker selectedValue={expYear} onValueChange={setExpYear} style={styles.picker}>
+          <Picker style={styles.picker} selectedValue={expYear} onValueChange={setExpYear}>
             {expYeardata.map((exp, idx) => (
               <Picker.Item key={idx} label={exp === '' ? 'Select Years of Exp' : exp} value={exp} />
             ))}
           </Picker>
         </View>
+         {errors.expYear && <Text style={styles.errorText}>{errors.expYear}</Text>}
+        
 
-        <Text style={styles.label}>Job Type</Text>
+        <Text style={styles.label}>Job Type <Text style={styles.required}>*</Text></Text>
         <View style={styles.pickerWrapper}>
-          <Picker selectedValue={jobType} onValueChange={setJobType} style={styles.picker}>
+          <Picker style={styles.picker} selectedValue={jobType} onValueChange={setJobType} >
             {JobTypedata.map((type, idx) => (
               <Picker.Item key={idx} label={type === '' ? 'Select Type of Job' : type} value={type} />
             ))}
           </Picker>
         </View>
+        {errors.jobType && <Text style={styles.errorText}>{errors.jobType}</Text>}
 
-        <Text style={styles.label}>Job Mode</Text>
+        <Text style={styles.label}>Job Mode <Text style={styles.required}>*</Text></Text>
         <View style={styles.pickerWrapper}>
-          <Picker selectedValue={jobMode} onValueChange={setJobMode} style={styles.picker}>
+          <Picker style={styles.picker} selectedValue={jobMode} onValueChange={setJobMode}>
             {JobModedata.map((mode, idx) => (
               <Picker.Item key={idx} label={mode === '' ? 'Select Job Mode' : mode} value={mode} />
             ))}
           </Picker>
         </View>
+         {errors.jobMode && <Text style={styles.errorText}>{errors.jobMode}</Text>}
 
         <Text style={styles.label}>Salary Package</Text>
         <TextInput
           style={styles.input}
-          placeholder="Type package"
+          
           placeholderTextColor="#999"
           value={salaryPack}
           onChangeText={setSalaryPack}
@@ -246,7 +267,7 @@ const styles = StyleSheet.create({
   },
   formContainer: {
     flex: 1,
-    backgroundColor: '#f9f9f9',
+    backgroundColor: '#fff',
   },
   scrollContainer: {
     padding: 20,
@@ -259,36 +280,36 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   input: {
-    backgroundColor: '#fff',
-    borderColor: '#ccc',
-    borderWidth: 1,
+    backgroundColor: '#e6eefa',
     borderRadius: 8,
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
     paddingVertical: 10,
-    fontSize: 16,
+    marginBottom: 8,
+  
   },
   textArea: {
-    backgroundColor: '#fff',
+    backgroundColor: '#e6eefa',
     borderColor: '#ccc',
     borderWidth: 1,
     borderRadius: 8,
-    paddingHorizontal: 12,
-    paddingVertical: 10,
+    padding: 12,
     fontSize: 16,
-    minHeight: 100,
     textAlignVertical: 'top',
-  },
-  pickerWrapper: {
-    backgroundColor: '#fff',
-    borderColor: '#ccc',
-    borderWidth: 1,
-    borderRadius: 8,
-    marginBottom: 10,
-    overflow: 'hidden',
+    minHeight: 100,
+    marginBottom: 8,
   },
   picker: {
     height: 50,
-    width: '100%',
+    width: "100%",
+    backgroundColor: '#e6eefa',
+    borderRadius: 10,
+    border:'none',
+    borderRadius: 10,
+    paddingHorizontal: 10,
+  },
+  pickerWrapper: {
+    marginBottom: 8,
+    overflow: 'hidden',
   },
   submitButton: {
     marginTop: 30,
@@ -329,6 +350,9 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 18,
     fontWeight: 'bold',
+  },
+  required:{
+    color:"#ff2121"
   },
 });
 

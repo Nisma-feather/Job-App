@@ -5,7 +5,7 @@ import { auth, db } from "../firebaseConfig";
 import { addDoc, collection } from "firebase/firestore";
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import { useNavigation } from "@react-navigation/native";
-const ApplyJob = ({navigation}) => {
+const ApplyJob = ({navigation,route}) => {
     const [jobForm, setJobForm] = useState({
         name: "",
         website: "",
@@ -13,8 +13,9 @@ const ApplyJob = ({navigation}) => {
     });
     
     const uid = auth.currentUser?.uid || "fA9DeooDHHOpjgsLXiGi2VFeE4y2";
-    const companyUID = "vm5dkIUfk0WxgnXT34QBttxA3kV2";
-    const JobId = "e7lCzgdNy1XvJxmnIBXn";
+    const {companyUID }= route.params;
+    const {JobId} = route.params;
+    console.log(JobId,companyUID)
     const [cvFile, setCvFile] = useState(null);
     const [fileName, setFileName] = useState("No file chosen");
 

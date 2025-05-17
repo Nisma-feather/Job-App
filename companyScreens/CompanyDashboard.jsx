@@ -8,6 +8,7 @@ import { Component } from "react";
 import CompanyProfileEdit from "./CompanyProfileEdit";
 import PostJobHome from "./PostJobHome";
 import PostJobEdit from "./PostJobEdit";
+import UserProfile from "./UserProfile";
 
 const Tab=createBottomTabNavigator();
 const Stack=createNativeStackNavigator();
@@ -18,11 +19,11 @@ const CompanyDashboard = () => {
     <Tab.Navigator screenOptions={{
       tabBarActiveTintColor:'blue',
       tabBarInactiveTintColor:"gray"
-  }} initialRouteName="Posted Jobs">
+  }} initialRouteName="View Applications">
       <Tab.Screen name="company Profile" component={CompanyProfileStack}/>
       <Tab.Screen name="Posted Jobs" component={CompanyPostJobStack}/>
       <Tab.Screen name="notfication" component={Notifications}/>
-      <Tab.Screen name="View Applicatons" component={JobApplicationStack}/>
+      <Tab.Screen name="View Applications" component={JobApplicationStack}/>
       
   </Tab.Navigator>
   )
@@ -33,6 +34,7 @@ const JobApplicationStack=()=>{
     <Stack.Navigator>
       <Stack.Screen name="Posted Jobs" component={ViewJobApplications}/>
       <Stack.Screen name="Application List" component={ApplicationsList}/>
+      <Stack.Screen name="User Profile" component={UserProfile}/>
     
     </Stack.Navigator>
      

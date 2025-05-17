@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { TouchableOpacity, ScrollView, SafeAreaView,Image, View, Text, StyleSheet, FlatList, Pressable } from 'react-native'
+import { TouchableOpacity, ScrollView, SafeAreaView,Image, View, Text, StyleSheet, FlatList, Pressable, Alert } from 'react-native'
 import { Ionicons, Feather, Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
 import { auth, db } from '../firebaseConfig';
 import { CommonActions } from '@react-navigation/native';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDocs, query, where } from 'firebase/firestore';
 
 
 
@@ -17,6 +17,7 @@ const PostJobHome = ({navigation}) => {
         if (!companyUID) {
             return
         }
+
         try {
             const q = query(collection(db, 'jobs'), where('companyUID', '==', companyUID));
             const snapData = await getDocs(q);
@@ -46,14 +47,32 @@ const PostJobHome = ({navigation}) => {
         }
         return diffDate === 1 ? '1 day ago' : `${diffDate}days ago`
     }
+    const handleJobDelete=async(JobId)=>{
+        try{
+
+            const ref=doc(db,'jobs',JobId);
+            await deleteDoc(ref);
+            console.log("document deleted");
+            Alert.alert("Job Deleted Successfully")
+            console.log('deleted successfully')
+            fetchPostedJobs();
+        }
+        catch(e){
+            Alert.alert("Unable to delete")
+            
+        }
+       
+        
+    }
     useEffect(() => {
         fetchPostedJobs()
     }, [])
+
     console.log(postedjobs)
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView style={{ padding: 15 }}>
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity style={styles.button} onPress={()=>navigation.navigate("Post Job")}>
                     <Text style={styles.buttonText}>
                         Post New Job
                     </Text>
@@ -73,7 +92,7 @@ const PostJobHome = ({navigation}) => {
                                             <Image source={require('../assets/edit.png')} style={{height:22,width:22}}/>
 
                                             </Pressable>
-                                            <Pressable>
+                                            <Pressable onPress={()=>handleJobDelete(item.id)}>
                                             <Image source={require('../assets/delete.png')} style={{height:22,width:22}}/>
 
                                             </Pressable>

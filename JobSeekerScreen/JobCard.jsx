@@ -50,20 +50,24 @@ const JobCard = ({ item }) => {
   };
   const formatDate = (timeStamp) => {
     if (!timeStamp) return '';
-    const postedDate = timeStamp.toDate();
-    const now = new Date();
-    const differenceDate = Math.floor((now - postedDate) / (1000 * 60 * 60 * 24));
+    if (!timeStamp) return '';
 
+  const postedDate = timeStamp.toDate();
+  const now = new Date();
+  const differenceDate = Math.floor((now - postedDate) / (1000 * 60 * 60 * 24));
 
-    if (differenceDate === 0) {
-      if (diffHours === 0) {
-        const diffMinute = Math.flooe((now - postedDate) / (1000 * 60));
-        return diffMinute === 1 ? '1 Min ago' : `${diffMinute}s Min ago`
-      }
-      const diffHours = Math.floor((now - postedDate) / (1000 * 60 * 60))
-      return diffHours === 1 ? '1 Hour ago' : `${diffHours}Hour ago`
+  if (differenceDate === 0) {
+    const diffHours = Math.floor((now - postedDate) / (1000 * 60 * 60));
+    
+    if (diffHours === 0) {
+      const diffMinutes = Math.floor((now - postedDate) / (1000 * 60));
+      return diffMinutes <= 1 ? '1 minute ago' : `${diffMinutes} minutes ago`;
     }
-    return differenceDate === 1 ? '1 Day ago' : `${differenceDate} Days ago`
+
+    return diffHours === 1 ? '1 hour ago' : `${diffHours} hours ago`;
+  }
+
+  return differenceDate === 1 ? '1 day ago' : `${differenceDate} days ago`;
 
   }
   useEffect(() => {
