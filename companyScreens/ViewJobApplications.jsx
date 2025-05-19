@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react'
-import { View,Text, FlatList, Pressable,TouchableOpacity,SafeAreaView,ScrollView,Image, } from 'react-native'
+import { View,Text, FlatList, Pressable,TouchableOpacity,SafeAreaView,ScrollView,Image, Modal, TextInput, Alert, } from 'react-native'
 import { useNavigation } from '@react-navigation/native';
 import { Ionicons, Feather, Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
 import { auth, db } from '../firebaseConfig';
-import { collection, getDocs, query, where } from 'firebase/firestore';
+import { addDoc, collection, getDocs, query, updateDoc, where,doc, getDoc } from 'firebase/firestore';
 import { StyleSheet } from 'react-native';
 
 const formatDate = (date) => {
@@ -102,9 +102,17 @@ const ViewJobApplications = ({navigation}) => {
 export default ViewJobApplications
 
 const ApplicationsList = ({ route }) => {
-  const { JobId } = route.params;
+   const { JobId } = route.params;
+  const [modalVisible,setModalVisible]=useState(false);
   const [applications, setApplications] = useState([]);
+  const [status,setStatus]=useState("");
+  const [message,setMessage]=useState("");
+  const [jobData,setJobData]=useState("");
+  const [currentApplication,setCurrentApplication]=useState({})
   const navigation = useNavigation();
+  const selectionMsg=`We are pleased to inform you that you have been shortlisted for the position of ${jobData.jobrole} at ${jobData.companyName} and we look forward to the next steps in the selection process. Our team will be in touch with you shortly regarding further details.`
+  const rejectionMSg=`Thank you for your interest in the ${jobData.jobrole} position at ${jobData.companyName}.we regret to inform you that you have not been shortlisted for the next stage of the selection process. `
+
 
   const fetchApplications = async () => {
     if (!JobId) return;
@@ -121,10 +129,42 @@ const ApplicationsList = ({ route }) => {
       console.log('Error fetching applications:', e);
     }
   };
+  const fetchCompanyDetails=async()=>{
+    const jobsnap=await getDoc(doc(db,'jobs',JobId));
+    setJobData(jobsnap.data());
+
+  }
+  const updateStatus=async()=>{
+    try{
+      const jobref=doc(db,'jobApplications',currentApplication.id);
+      await updateDoc(jobref,{status:status,statusAt:new Date()});
+  
+      const MessageRef=collection(db,'users',currentApplication.userId,'messages');
+      await addDoc(MessageRef,{
+        message: message,
+        messageAt: new Date(),
+        from:jobData.companyName,
+        type: 'status_update',
+        status: status,
+        read: false
+      })
+      setMessage('');
+      setStatus('');
+      setModalVisible(false);
+      fetchApplications();
+      console.log("status updated successfully")
+    }
+   catch(e){
+    console.log(e);
+    Alert.alert("can't able to send the messages")
+   }
+  }
 
   useEffect(() => {
     fetchApplications();
+    fetchCompanyDetails();
   }, []);
+ console.log(jobData)
 console.log(applications)
   const renderItem = ({ item }) => (
     <View style={styles.card}>
@@ -147,6 +187,7 @@ console.log(applications)
       >
         <Text style={styles.buttonText}>View Full Profile</Text>
       </TouchableOpacity>
+      <TouchableOpacity  style={styles.button} onPress={()=>{setModalVisible(true),setCurrentApplication(item)}}> <Text style={styles.buttonText}>Update Status</Text></TouchableOpacity>
     </View>
   );
 
@@ -159,6 +200,45 @@ console.log(applications)
         renderItem={renderItem}
         contentContainerStyle={styles.list}
       />
+      <Modal visible={modalVisible} animationType='slide' onRequestClose={() => setModalVisible(false)} transparent>
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContainer}>
+          <Text style={styles.title}>Update Status</Text>
+
+          <View style={styles.buttonGroup}>
+            <TouchableOpacity style={[styles.optionButton, status === 'shortlisted' && styles.selected]} onPress={() => setStatus("shortlisted")}>
+              <Text style={styles.modalButtonText}>Shortlisted</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={[styles.optionButton, status === 'Not Shortlisted' && styles.selected]} onPress={() => setStatus("Not Shortlisted")}>
+              <Text style={styles.modalButtonText}>Rejected</Text>
+            </TouchableOpacity>
+          </View>
+
+          <TextInput
+            style={styles.textInput}
+            multiline
+            placeholder="Enter message..."
+            value={status === 'shortlisted' ? selectionMsg : status === 'Not Shortlisted' ? rejectionMSg : ''}
+            onChangeText={setMessage}
+          />
+
+          <View style={styles.footerButtons}>
+            <TouchableOpacity style={styles.cancelButton} onPress={() => {
+              setModalVisible(false);
+              setStatus("");
+              setMessage("");
+            }}>
+              <Text style={styles.cancelText}>Cancel</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.sendButton} onPress={updateStatus}>
+              <Text style={styles.sendText}>Send</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
     </View>
   );
 };
@@ -290,5 +370,77 @@ buttonText: {
   color: '#fff',
   fontWeight: '600',
   fontSize: 16,
+},
+modalOverlay: {
+  flex: 1,
+  backgroundColor: 'rgba(0,0,0,0.4)',
+  justifyContent: 'center',
+  alignItems: 'center',
+},
+modalContainer: {
+  width: '85%',
+  backgroundColor: '#fff',
+  borderRadius: 12,
+  padding: 20,
+  elevation: 5,
+},
+title: {
+  fontSize: 18,
+  fontWeight: '600',
+  marginBottom: 15,
+  textAlign: 'center',
+},
+buttonGroup: {
+  flexDirection: 'row',
+  justifyContent: 'space-around',
+  marginVertical: 10,
+},
+optionButton: {
+  paddingVertical: 10,
+  paddingHorizontal: 15,
+  backgroundColor: '#f0f0f0',
+  borderRadius: 8,
+},
+selected: {
+  backgroundColor: '#4CAF50',
+},
+modalButtonText: {
+  color: '#000',
+  fontWeight: '500',
+},
+textInput: {
+  borderWidth: 1,
+  borderColor: '#ccc',
+  borderRadius: 8,
+  padding: 10,
+  minHeight: 80,
+  marginVertical: 15,
+  textAlignVertical: 'top',
+},
+footerButtons: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+},
+cancelButton: {
+  backgroundColor: '#ccc',
+  padding: 10,
+  borderRadius: 8,
+  width: '48%',
+  alignItems: 'center',
+},
+sendButton: {
+  backgroundColor: '#2196F3',
+  padding: 10,
+  borderRadius: 8,
+  width: '48%',
+  alignItems: 'center',
+},
+cancelText: {
+  color: '#000',
+  fontWeight: '500',
+},
+sendText: {
+  color: '#fff',
+  fontWeight: '500',
 },
 })

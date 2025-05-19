@@ -1,48 +1,49 @@
 import { useState } from "react";
 import { Alert, View, Button, SafeAreaView, TextInput, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { signInWithEmailAndPassword } from "firebase/auth";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { db, auth } from "../firebaseConfig";
 import { doc, getDoc } from "firebase/firestore";
 
 export default function JobSeekerLoginScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
- const [emailError,setEmailError]=useState("");
- const [passwordError,setPasswordError]=useState("");
-  const validate=()=>{
-    let valid=true;
-    if(!email.trim()){
-        valid=false
-        setEmailError("Email is Required")
+  const [emailError, setEmailError] = useState("");
+  const [passwordError, setPasswordError] = useState("");
+  const validate = () => {
+    let valid = true;
+    if (!email.trim()) {
+      valid = false
+      setEmailError("Email is Required")
     }
-    else{
-       const  emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-          setEmailError("Invalid email format");
-          valid = false;
-        }
-        else{
-            setEmailError("")
-        }
-      
-    }
-    
-    if(!password.trim()){
-        valid=false
-        setPasswordError("Password is Required")  
-    }
-    else if (password.length < 8) {
-        setPasswordError("Password must be at least 8 characters");
+    else {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        setEmailError("Invalid email format");
         valid = false;
       }
-    else{
-        setPasswordError("")
+      else {
+        setEmailError("")
+      }
+
     }
 
-  return valid
+    if (!password.trim()) {
+      valid = false
+      setPasswordError("Password is Required")
+    }
+    else if (password.length < 8) {
+      setPasswordError("Password must be at least 8 characters");
+      valid = false;
+    }
+    else {
+      setPasswordError("")
+    }
+
+    return valid
   }
   const handleLogin = async () => {
-    if(!validate()) return
+    if (!validate()) return
     try {
       const userCred = await signInWithEmailAndPassword(auth, email, password);
       const uid = userCred.user.uid;
@@ -74,56 +75,104 @@ export default function JobSeekerLoginScreen({ navigation }) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <Text style={styles.heading}>Job Seeker Login</Text>
-       <View style={{}}>
-       <TextInput
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        keyboardType="email-address"
-        autoCapitalize="none"
-        style={styles.input}
-      />
-      {emailError?<Text style={styles.errorText}>{emailError}</Text>:null}
+    <SafeAreaView style={{ flex: 1 }}>
+      <View style={styles.container}>
+        <View style={styles.logoContainer}>
+          <View style={styles.logoOuter}>
+            <MaterialIcons name="double-arrow" color="#fff" size={28} />
+          </View>
+          <View>
+            <Text style={styles.logoText}>Karier</Text>
+            <Text style={styles.logoSubText}>Job Portal App</Text>
+          </View>
+        </View>
 
-       </View>
-       <View style={{}}>
-       <TextInput
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        style={styles.input}
-      />
-       {passwordError?<Text style={styles.errorText}>{passwordError}</Text>:null}
+        <Text style={styles.label}>Email<Text style={styles.required}>*</Text></Text>
+        <TextInput
+          placeholder="Email"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+          style={styles.input}
+        />
+        {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
 
-       </View>
-     
+          <Text  style={styles.label}>Password<Text style={styles.required}>*</Text></Text>
+        <TextInput
+          placeholder="Password"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+          style={styles.input}
+        />
+        {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
 
-      <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-        <Text style={styles.loginText}>Login</Text>
+
+
+
+      <TouchableOpacity style={styles.LoginButton} onPress={handleLogin}>
+        <Text style={styles.LoginButtonText}>Login</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate("Personal Information")}>
-        <Text style={styles.signupText}>Don't have an account? Sign up</Text>
+      <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
+        <Text style={styles.signupText}>Don't have an account? <Text style={{color:'blue'}}> Creat one </Text></Text>
       </TouchableOpacity>
-    </SafeAreaView>
+
+    </View>
+      
+    </SafeAreaView >
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    padding: 24,
-    backgroundColor: "#f5f5f5"
+    backgroundColor: '#fff',
+    paddingHorizontal: 24,
+    justifyContent: 'center'
   },
- labelContainer:{
- 
+  logoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 10,
+    marginVertical: 20,
   },
-  errorText:{
-      color:'red'
+  logoOuter: {
+    backgroundColor: '#1967d2',
+    width: 50,
+    height: 50,
+    borderRadius: 12,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  logoText: {
+    color: '#1967d2',
+    fontSize: 22,
+    fontWeight: 'bold',
+  },
+  logoSubText: {
+    color: '#666',
+    fontSize: 12,
+  },
+  label: {
+    fontSize: 14,
+    fontWeight: '500',
+    marginBottom: 4,
+  },
+  required:{
+    color:"#ff2121"
+  },
+  input: {
+    backgroundColor: '#e6eefa',
+    borderRadius: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    marginBottom: 16,
+  },
+  errorText: {
+    color: 'red'
   },
   heading: {
     fontSize: 28,
@@ -132,30 +181,22 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#333"
   },
-  input: {
-    height: 50,
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    paddingHorizontal: 16,
-    marginBottom: 16,
-    borderWidth: 1,
-    borderColor: "#ccc"
-  },
-  loginButton: {
-    backgroundColor: "#1967d2",
+ 
+  LoginButton: {
+    backgroundColor: '#2563EB',
     paddingVertical: 14,
     borderRadius: 8,
-    alignItems: "center",
-    marginBottom: 20
+    marginVertical:10
   },
-  loginText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600"
+  LoginButtonText: {
+    color: '#fff',
+    fontSize:17,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
   signupText: {
     textAlign: "center",
-    color: "#0066cc",
+    color: "#444",
     fontSize: 14
   }
 });

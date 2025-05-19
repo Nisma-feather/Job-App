@@ -100,15 +100,14 @@ const EducationScreen = ({navigation}) => {
    }
     const uid = auth.currentUser?.uid;
     if (!uid) return;
-
-    // Validate fields
-    for (const edu of educationDetails) {
-      if (!edu.type || !edu.name || !edu.institute || !edu.percentage) {
-        Alert.alert("Validation Error", "Please fill all fields for all education entries");
-        return;
-      }
-    }
-
+     
+     
+    // for (const edu of educationDetails) {
+    //   if (!edu.type || !edu.name || !edu.institute || !edu.percentage) {
+    //     Alert.alert("Validation Error", "Please fill all fields for all education entries");
+    //     return;
+    //   }
+    // }
     try {
       setLoading(true);
       const userRef = doc(db, "users", uid);
@@ -116,10 +115,12 @@ const EducationScreen = ({navigation}) => {
         education: educationDetails,
         updatedAt: new Date() 
       });
+      console.log("updated successfully")
       Alert.alert("Success", "Education details updated successfully");
       navigation.navigate("ProfileHome");
     } catch (err) {
       console.error("Error updating education:", err);
+      console.log("Error in updating")
       Alert.alert("Error", "Failed to update education details");
     } finally {
       setLoading(false);

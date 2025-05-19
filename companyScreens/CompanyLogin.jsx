@@ -83,6 +83,7 @@ const styles=StyleSheet.create({
         flex: 1,
         backgroundColor: '#fff',
         paddingHorizontal: 24,
+        justifyContent:'center'
       },
     logoContainer: {
         flexDirection: 'row',

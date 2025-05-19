@@ -112,8 +112,8 @@ const CompanySignUp = ({ navigation }) => {
   // };
 
   return (
-    <SafeAreaView >
-      <ScrollView showsVerticalScrollIndicator={false}>
+    <SafeAreaView style={{flex:1}}>
+      <ScrollView style={{flex:1}} showsVerticalScrollIndicator={false}>
         <View style={styles.container}>
         <View style={styles.logoContainer}>
           <View style={styles.logoOuter}>
@@ -190,6 +190,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     paddingHorizontal: 24,
+    height:'100%'
   },
   logoContainer: {
     flexDirection: 'row',
