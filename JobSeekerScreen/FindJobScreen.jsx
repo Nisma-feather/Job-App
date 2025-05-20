@@ -209,7 +209,7 @@ const FindJobScreen = ({navigation}) => {
     container: {
       padding: 16,
       flex: 1,
-      backgroundColor: '#f9f9f9',
+      backgroundColor: '#fff',
     },
     inputContainer: {
       marginBottom: 16,
@@ -225,13 +225,21 @@ const FindJobScreen = ({navigation}) => {
       zIndex: 2,
     },
     inputField: {
-      backgroundColor: "white",
+      backgroundColor: "#fff",
       height: 50,
       width: "100%",
       paddingLeft: 35,
       borderColor: "#dedede",
       borderWidth: 1,
       borderRadius: 6,
+      shadowColor:'#000',
+      shadowOffset:{
+        width:0,
+        height:1
+      },
+      shadowRadius:2,
+      shadowOpacity:0.2,
+     
     },
     filterButton: {
       backgroundColor: '#0a66c2',
@@ -267,15 +275,47 @@ const FindJobScreen = ({navigation}) => {
       marginLeft: 10,
       alignSelf: 'flex-start',
     },
-    filtersContainer: {
-      position: "absolute",
-      backgroundColor: "white",
-      width: "75%",
-      height: "100%",
+    filterOverlay: {
+      position: 'absolute',
       top: 0,
+      left: 0,
       right: 0,
-      padding: 10,
+      bottom: 0,
+      backgroundColor: 'rgba(0,0,0,0.5)',
       zIndex: 10,
+    },
+    filtersContainer: {
+      position: 'absolute',
+      right: 0,
+      top: 0,
+      width: '75%',
+      height: '100%',
+      backgroundColor: 'white',
+      padding: 20,
+      zIndex: 20,
+      elevation: 20, // for Android
+    },
+    applyButton: {
+      backgroundColor: '#0a66c2',
+      padding: 12,
+      borderRadius: 6,
+      alignItems: 'center',
+      marginTop: 20,
+    },
+    resetButton: {
+      backgroundColor: '#f0f0f0',
+      padding: 12,
+      borderRadius: 6,
+      alignItems: 'center',
+      marginTop: 10,
+    },
+    buttonText: {
+      color: 'white',
+      fontWeight: 'bold',
+    },
+    resetButtonText: {
+      color: '#333',
+      fontWeight: 'bold',
     },
     sectionTitle: {
       fontWeight: 'bold',
@@ -289,11 +329,11 @@ const FindJobScreen = ({navigation}) => {
     filterOptionButton: {
       padding: 8,
       margin: 4,
-      backgroundColor: '#e0e0e0',
+      backgroundColor: 'rgb(232, 240, 251)',
       borderRadius: 6,
     },
     filterOptionButtonSelected: {
-      backgroundColor: '#4caf50',
+      backgroundColor: 'rgb(37, 99, 235)',
     },
     closeButton: {
       alignSelf: 'flex-end',
@@ -303,11 +343,14 @@ const FindJobScreen = ({navigation}) => {
         padding: 10,
         borderRadius: 6,
         backgroundColor: '#fff',
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 2,
+        shadowColor:'#000',
+        shadowOffset:{
+          width:0,
+          height:1
+        },
+        shadowRadius:5,
+        shadowOpacity:0.2,
+        elevation:2,
         marginBottom: 12,
         gap:15
 
@@ -330,6 +373,12 @@ const FindJobScreen = ({navigation}) => {
       width: 50,
       height: 50,
       
+    },
+    filterButtonTextSelected:{
+      color:"white"
+    },
+    filteredButtonText:{
+      color:'black'
     }
   });
 
@@ -339,72 +388,59 @@ console.log(companyList)
       <ScrollView style={{width: "100%"}}>
         <View style={{padding: 10, width: "100%"}}>
           {/* Search Jobs Input */}
-          <View style={styles.inputWrapper}>
-            <Feather 
-              name="search" 
-              color="#7196c8" 
-              size={20} 
-              style={styles.inputIcon}
-            />
-            <TextInput
-              placeholder={options==='jobs'?'Search Jobs':'Search Companies'}
-              value={searchQuery}
-              onChangeText={handlesearch}
-              style={styles.inputField}
-            />
-            {/* <Pressable 
-              onPress={() => setShowFilters(true)} 
-              style={{position: 'absolute', right: 10, top: 14}}
-            >
-              <Ionicons name="options" color="#000" size={24} />
-            </Pressable> */}
-            <Pressable style={{position: 'absolute', right: 10, top: 14}} onPress={()=>setShowOption(true)}>
-              
-              <MaterialCommunityIcons name="arrow-down-drop-circle" color="#000" size={24} />
-              
-            </Pressable>
-           
-          </View>
-          {
-              showOption &&
-              <View style={{gap:5,backgroundColor:"lightblue",positon:'absolute',width:80,height:'auto',right:10}}>
-              {
-                optionData.map((option,idx)=>{
-                  return(
-               
-                    <TouchableOpacity key={idx} onPress={()=>{setOptions(option);setShowOption(false)}}>
-                      <Text style={{color:'white'}}>{option}</Text>
-                    </TouchableOpacity>
-                  )
-                   
-                })
-              }
-              
-            </View>}
+          <View style={styles.inputContainer}>
+  <View style={styles.inputWrapper}>
+    <Ionicons name="search" size={20} color="#555" style={styles.inputIcon} />
+    <TextInput
+      placeholder={options==='jobs'?'search jobs':'search companies'}
+      style={styles.inputField}
+      value={searchQuery}
+      onChangeText={handlesearch}
+    />
+    <TouchableOpacity style={{right:15,top:10,position:'absolute'}}   onPress={() => setShowOption(!showOption)}> <Entypo name={showOption ? "chevron-up" : "chevron-down"} size={20} /></TouchableOpacity>
+  </View>
 
-          {/* Location Input */}
-          <View style={styles.inputWrapper}>
-            <Ionicons 
-              name="location-outline" 
-              color="#7196c8" 
-              size={20} 
-              style={styles.inputIcon}
-            />
-            <TextInput
-              placeholder="Search by Location"
-              value={locationQuery}
-              onChangeText={handleLocationSearch}
-              style={styles.inputField}
-            />
-          </View>
+  <View style={styles.inputWrapper}>
+    <Feather name="map-pin" size={20} color="#555" style={styles.inputIcon} />
+    <TextInput
+      placeholder="Location"
+      style={styles.inputField}
+      value={locationQuery}
+      onChangeText={handleLocationSearch}
+    />
+  </View>
+
+ 
+ 
+
+  {/* Dropdown options */}
+  {showOption && (
+    <View style={{position:'absolute', top:30,right:10,width:200,height:120,
+      padding:5,backgroundColor:'#f7f7f7'
+    }}>
+      {optionData.map((item, index) => (
+        <Pressable
+          key={index}
+          onPress={() => {
+            setOptions(item);
+            setShowOption(false);
+          }}
+          style={styles.dropdownItem}
+        >
+          <Text style={{textAlign:'center'}}>{item}</Text>
+        </Pressable>
+      ))}
+    </View>
+  )}
+</View>
 
           {/* Apply Filter Button */}
-          <TouchableOpacity 
+        {options==='jobs' &&  <TouchableOpacity 
             style={styles.filterButton}
             onPress={() => setShowFilters(true)}
           >
             <Text style={styles.filterButtonText}>Apply Filters</Text>
-          </TouchableOpacity>
+          </TouchableOpacity>}
       {options==='jobs' &&
        
       <View style={styles.listJobs}>
@@ -464,6 +500,12 @@ console.log(companyList)
 
           {/* Filter Panel */}
           {showFilter && (
+            <>
+            <Pressable 
+              style={styles.filterOverlay}
+              onPress={() => setShowFilters(false)}
+            />
+            
             <View style={styles.filtersContainer}>
               <Pressable 
                 onPress={() => setShowFilters(false)}
@@ -471,7 +513,7 @@ console.log(companyList)
               >
                 <FontAwesome name="close" color="#000" size={24} />
               </Pressable>
-
+    
               <Text style={styles.sectionTitle}>Experience</Text>
               <View style={styles.filtersRow}>
                 {expYeardata.map((exp) => (
@@ -483,11 +525,13 @@ console.log(companyList)
                       expFilter.includes(exp) && styles.filterOptionButtonSelected,
                     ]}
                   >
-                    <Text>{exp}</Text>
+                    <Text style={[styles.filteredButtonText, expFilter.includes(exp) && styles.filterButtonTextSelected]}>
+                      {exp}
+                    </Text>
                   </TouchableOpacity>
                 ))}
               </View>
-
+    
               <Text style={styles.sectionTitle}>Job Type</Text>
               <View style={styles.filtersRow}>
                 {JobTypedata.map((type) => (
@@ -499,11 +543,13 @@ console.log(companyList)
                       jobTypeFilter.includes(type) && styles.filterOptionButtonSelected,
                     ]}
                   >
-                    <Text>{type}</Text>
+                    <Text style={[styles.filteredButtonText, jobTypeFilter.includes(type) && styles.filterButtonTextSelected]}>
+                      {type}
+                    </Text>
                   </TouchableOpacity>
                 ))}
               </View>
-
+    
               <Text style={styles.sectionTitle}>Job Mode</Text>
               <View style={styles.filtersRow}>
                 {JobModedata.map((mode) => (
@@ -515,13 +561,29 @@ console.log(companyList)
                       jobModeFilter.includes(mode) && styles.filterOptionButtonSelected,
                     ]}
                   >
-                    <Text>{mode}</Text>
+                    <Text style={[styles.filteredButtonText, jobModeFilter.includes(mode) && styles.filterButtonTextSelected]}>
+                      {mode}
+                    </Text>
                   </TouchableOpacity>
                 ))}
               </View>
-
-              <Button title="Apply Filters" onPress={handleApplyFilters} />
+    
+              <TouchableOpacity 
+                style={styles.applyButton} 
+                onPress={handleApplyFilters}
+              >
+                <Text style={styles.buttonText}>Apply Filters</Text>
+              </TouchableOpacity>
+              
+              <TouchableOpacity 
+                style={styles.resetButton} 
+                onPress={resetAllFilters}
+              >
+                <Text style={styles.resetButtonText}>Reset Filters</Text>
+              </TouchableOpacity>
             </View>
+            </>
+            
           )}
         </View>
       </ScrollView>

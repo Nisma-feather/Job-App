@@ -93,7 +93,7 @@ const JobCard = ({ item }) => {
           </View>
           
           <Pressable style={styles.bookmarkIcon} onPress={() => handletoggleBookmark(item.id)}>
-            <Ionicons name={bookmarkJobs.includes(item.id) ? "bookmark" : "bookmark-outline"} color="#3a72be"  size={22} />
+            <Ionicons name={bookmarkJobs.includes(item.id) ? "bookmark" : "bookmark-outline"} color="#4B9CD3"  size={22} />
           </Pressable>
 
         </View>
@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 2,
     marginBottom: 12,

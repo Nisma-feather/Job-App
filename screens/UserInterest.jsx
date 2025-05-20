@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, Alert, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, Alert, StyleSheet, ScrollView } from 'react-native';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { setDoc, doc } from 'firebase/firestore';
 import { db, auth } from '../firebaseConfig';
@@ -66,7 +66,30 @@ const UserInterestForm = ({ navigation, route }) => {
   ];
 
   const nextStep = () => {
+    const fieldMap = {
+      1: 'jobType',
+      2: 'experienceLevel',
+      3: 'skills',
+      4: 'position',
+    };
+  
+    const currentField = fieldMap[currentStep];
+    const value = formData[currentField];
+  
+    // Validation: check for empty, null, or empty array (for skills)
+    if (
+      value === null ||
+      (Array.isArray(value) && value.length === 0) ||
+      (typeof value === 'string' && value.trim() === '')
+    ) {
+      Alert.alert('Validation Error', `Please select your ${steps[currentStep - 1].title}`);
+      return;
+    }
+  
+
     if (currentStep < steps.length) {
+      
+     
       setCurrentStep(currentStep + 1);
     } else {
       submitForm();
@@ -200,7 +223,7 @@ const stepperStyles = StyleSheet.create({
     paddingHorizontal: 10,
   },
   stepContainer: {
-    alignItems: 'center',
+    alignItems: 'flex-end',
     zIndex: 2,
   },
   stepCircle: {
@@ -245,7 +268,9 @@ const stepperStyles = StyleSheet.create({
 });
 
   return (
-    <LinearGradient colors={['#1966d1','white']}  locations={[0, 0.35, 1]} style={styles.container}>
+  
+       <LinearGradient colors={['#2563EB','white']}  locations={[0, 0.4, 1]} style={styles.container}>
+        <ScrollView>
       <ProgressStepper steps={steps} currentStep={currentStep} />
 
       <View style={styles.contentContainer}>
@@ -275,7 +300,11 @@ const stepperStyles = StyleSheet.create({
           </Text>
         </TouchableOpacity>
       </View>
+      </ScrollView>
       </LinearGradient>
+
+    
+   
   );
 };
 
@@ -285,7 +314,7 @@ const stepperStyles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     marginBottom: 30,
     paddingHorizontal: 10,
   },
@@ -325,6 +354,7 @@ const stepperStyles = StyleSheet.create({
   connectorLine: {
     flex: 1,
     height: 3,
+    alignItems:'flex-end',
     backgroundColor: '#1967d2',
     marginHorizontal: -5,
     marginBottom: 20,

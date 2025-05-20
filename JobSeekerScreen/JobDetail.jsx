@@ -36,9 +36,9 @@ const JobDetail = ({ route,navigation }) => {
             <Text style={styles.role}>{currentJob.jobrole}</Text>
             <Text style={styles.location}>{currentJob.locations}</Text>
             <View style={styles.tags}>
-              <Text style={styles.tag}>{currentJob.jobType}</Text>
-              <Text style={styles.tag}>{currentJob.jobMode}</Text>
-              <Text style={styles.tag}>{currentJob.role}</Text>
+              {currentJob.jobType &&<Text style={styles.tag}>{currentJob.jobType}</Text>}
+              {currentJob.jobMode && <Text style={styles.tag}>{currentJob.jobMode}</Text>}
+              <Text style={styles.tag}>{currentJob.jobrole}</Text>
             </View>
           </View>
         </View>
@@ -198,8 +198,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
     marginTop: 12,
     backgroundColor: '#f0f4ff',
-    borderRadius: 15,
-    padding:10
+
 
 
   },
@@ -208,14 +207,15 @@ const styles = StyleSheet.create({
     justifyContent:'center',
     alignItems: 'center',
     borderRadius:15,
-    paddingVertical:4,
+
     paddingHorizontal:4,
     backgroundColor:"fff"
   },
   tabText: {
     color: '#3d77ff',
     fontWeight: '600',
-    textAlign:'center'
+    textAlign:'center',
+    padding:5
   },
   activeTab: {
     backgroundColor: '#3d77ff',
@@ -223,7 +223,8 @@ const styles = StyleSheet.create({
   activeTabText: {
     color: '#fff',
     fontWeight: 'bold',
-    textAlign:'center'
+    textAlign:'center',
+    padding:5
   },
   content: {
     paddingHorizontal: 16,

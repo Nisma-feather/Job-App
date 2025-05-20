@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 const JobTypeScreen = ({ selected, onSelect }) => {
   const jobTypes = [
     'Full Time',
@@ -24,6 +24,10 @@ const JobTypeScreen = ({ selected, onSelect }) => {
             ]}
             onPress={() => onSelect(type)}
           >
+            { selected === type ?
+                         <MaterialCommunityIcons name="checkbox-marked" color="#1967d2" size={24} />:
+                         <MaterialCommunityIcons name="checkbox-blank-outline" color="#f9f9f9" size={24} /> 
+                         }
             <Text style={styles.optionText}>{type}</Text>
           </TouchableOpacity>
         ))}
@@ -44,13 +48,15 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 22,
     fontWeight: 'bold',
-    marginBottom: 30,
+    marginVertical: 30,
     textAlign: 'center',
   },
   optionsContainer: {
     marginBottom: 30,
   },
   option: {
+    flexDirection:'row',
+      gap:13,
     padding: 15,
     borderWidth: 1,
     borderColor: '#ddd',

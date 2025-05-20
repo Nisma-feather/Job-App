@@ -12,7 +12,7 @@ const HomeScreen = ({ navigation }) => {
   const [jobsForYou, setJobsForYou] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   const uid = auth.currentUser?.uid;
 
   const fetchUserData = async () => {
@@ -38,16 +38,16 @@ const HomeScreen = ({ navigation }) => {
 
   const format = (recommendData = {}) => {
     const newRecommend = { ...recommendData };
-    
+
     if (newRecommend.experienceLevel) {
       const exp = newRecommend.experienceLevel;
-      newRecommend.experienceLevel = 
-        exp === 'Entry Level' ? '0 - 1 Year' : 
-        exp === 'Student' ? 'Fresher' :
-        exp === 'Mid Level' ? '2-5 Years' : 
-        'More than 5 Years';
+      newRecommend.experienceLevel =
+        exp === 'Entry Level' ? '0 - 1 Year' :
+          exp === 'Student' ? 'Fresher' :
+            exp === 'Mid Level' ? '2-5 Years' :
+              'More than 5 Years';
     }
-    
+
     return newRecommend;
   };
 
@@ -55,7 +55,7 @@ const HomeScreen = ({ navigation }) => {
     try {
       const jobRef = collection(db, 'jobs');
       const queryConditions = [];
-      
+
       if (recommendData?.position) {
         queryConditions.push(where('jobrole', '==', recommendData.position));
       }
@@ -67,7 +67,7 @@ const HomeScreen = ({ navigation }) => {
       }
 
       let jobs = [];
-      
+
       if (queryConditions.length > 0) {
         const q = query(jobRef, ...queryConditions);
         const querySnapshot = await getDocs(q);
@@ -78,7 +78,7 @@ const HomeScreen = ({ navigation }) => {
         const skillJobs = await fetchSkillBasedJobs(userData.skills, recommendData);
         jobs = [...jobs, ...skillJobs];
       }
-      
+
       return jobs;
     } catch (err) {
       console.error('Error fetching recommended jobs:', err);
@@ -89,7 +89,7 @@ const HomeScreen = ({ navigation }) => {
   const fetchSkillBasedJobs = async (skills, recommendData) => {
     try {
       if (!skills || skills.length === 0) return [];
-      
+
       const conditions = [
         where('skillsRequired', 'array-contains-any', skills)
       ];
@@ -100,14 +100,14 @@ const HomeScreen = ({ navigation }) => {
 
       const q = query(collection(db, 'jobs'), ...conditions);
       const querySnapshot = await getDocs(q);
-      
+
       return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     } catch (err) {
       console.error('Error fetching skill-based jobs:', err);
       return [];
     }
   };
- console.log(jobsForYou)
+  console.log(jobsForYou)
   useEffect(() => {
     const fetchData = async () => {
       if (uid) {
@@ -116,7 +116,7 @@ const HomeScreen = ({ navigation }) => {
           const userData = await fetchUserData();
           const updatedRecommend = format(userData?.userInterest || {});
           const jobs = await fetchRecommendJobs(updatedRecommend);
-          
+
           setUserData(userData || {});
           setRecommend(updatedRecommend);
           setJobs(jobs);
@@ -154,24 +154,32 @@ const HomeScreen = ({ navigation }) => {
       </View>
     );
   }
- console.log(recommend)
+  console.log(recommend)
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: '#F4F7FE'}}>
+    <ScrollView style={{ flex: 1, backgroundColor: '#fff' }}>
       {/* Top Bar */}
-      <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16,gap:12}}>
+      <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, gap: 12 }}>
         <Ionicons name="menu" size={24} />
-        <Pressable onPressIn={() => navigation.navigate("Find Job")} style={{flex: 1,}}>
+        <Pressable onPressIn={() => navigation.navigate("Find Job")} style={{ flex: 1, }}>
           <TextInput
-            placeholder="Search Area"
+            placeholder="Search Jobs..."
+            placeholderTextColor="#666"
+            
             editable={false}
             style={{
-              
+
               backgroundColor: 'white',
               borderRadius: 20,
-        
-              paddingVertical:10,
+              paddingVertical: 10,
               paddingHorizontal: 12,
-              
+              shadowColor:'#000',
+              shadowOpacity:0.2,
+              shadowOffset:{
+                height:1,
+                width:0
+              },
+              shadowRadius:2
+
 
             }}
           />
@@ -180,17 +188,17 @@ const HomeScreen = ({ navigation }) => {
       </View>
 
       {/* Recommend Job */}
-      <View style={{ paddingHorizontal: 16 }}>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 }}>
+      <View style={{ padding: 16, backgroundColor: '#f2f7fc', paddingRight: 0 }}>
+        <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
           <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Recommend Job</Text>
-          <Text style={{ color: 'blue' }}>See All</Text>
+          <Text style={{ color: 'blue', paddingRight: 16 }}>See All</Text>
         </View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
           {jobs.map(job => (
-            <View style={{marginRight:10}}>
-               <JobCard key={job.id} item={job} navigation={navigation}/>
+            <View style={{ marginRight: 10 }}>
+              <JobCard key={job.id} item={job} navigation={navigation} />
             </View>
-            
+
           ))}
         </ScrollView>
       </View>
@@ -198,6 +206,8 @@ const HomeScreen = ({ navigation }) => {
       {/* Promo Section */}
       <View style={{
         backgroundColor: '#eaf0ff',
+     
+        height:120,
         margin: 16,
         borderRadius: 12,
         padding: 16,
@@ -215,18 +225,18 @@ const HomeScreen = ({ navigation }) => {
         </View>
         <Image
           source={require('../assets/working.png')}
-          style={{ width: 100, height: 100, resizeMode: 'contain', position: 'absolute', right: 10 }}
+          style={{ width: 110, height: 110, resizeMode: 'contain', position: 'absolute', right: 10 }}
         />
       </View>
 
       {/* Jobs for You */}
       <View style={{ paddingHorizontal: 16 }}>
-        <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 8 }}>Jobs for you</Text>
+        <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 13, marginTop: 6 }}>Jobs for you</Text>
         {jobsForYou.map(job => (
-       
-             <JobCard key={job.id} item={job} navigation={navigation}/>
-             
-         
+
+          <JobCard key={job.id} item={job} navigation={navigation} />
+
+
         ))}
       </View>
     </ScrollView>

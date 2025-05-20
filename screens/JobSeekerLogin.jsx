@@ -64,7 +64,7 @@ export default function JobSeekerLoginScreen({ navigation }) {
       Alert.alert("Login Failed", err.message, [
         {
           text: "Create Account",
-          onPress: () => navigation.navigate("Personal Information")
+          onPress: () => navigation.replace("SignUp")
         },
         {
           text: "Try Again"
@@ -115,7 +115,7 @@ export default function JobSeekerLoginScreen({ navigation }) {
         <Text style={styles.LoginButtonText}>Login</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => navigation.navigate("SignUp")}>
+      <TouchableOpacity onPress={() => navigation.replace("SignUp")}>
         <Text style={styles.signupText}>Don't have an account? <Text style={{color:'blue'}}> Creat one </Text></Text>
       </TouchableOpacity>
 

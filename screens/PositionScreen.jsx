@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const PositionScreen = ({ selected, onSelect }) => {
   const positions = [
@@ -23,7 +24,10 @@ const PositionScreen = ({ selected, onSelect }) => {
               selected === level && styles.selectedOption
             ]}
             onPress={() => onSelect(level)}
-          >
+          >  { selected === level ?
+             <MaterialCommunityIcons name="checkbox-marked" color="#1967d2" size={24} />:
+             <MaterialCommunityIcons name="checkbox-blank-outline" color="#f9f9f9" size={24} /> 
+             }
             <Text style={styles.optionText}>{level}</Text>
           </TouchableOpacity>
         ))}
@@ -54,6 +58,8 @@ const styles = StyleSheet.create({
       marginBottom: 30,
     },
     option: {
+      flexDirection:'row',
+      gap:13,
       padding: 15,
       borderWidth: 1,
       borderColor: '#ddd',
@@ -68,5 +74,7 @@ const styles = StyleSheet.create({
     optionText: {
       fontSize: 16,
       textAlign: 'center',
+      fontWeight:'bold',
+      color:'#555'
     },
   });

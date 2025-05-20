@@ -187,7 +187,7 @@ const CompanyCard = ({ route, navigation }) => {
     <SafeAreaView style={styles.container}>
       <ScrollView>
         {/* Top Banner */}
-        <View style={{ position: 'relative' }}>
+        {/* <View style={{ position: 'relative' }}>
           <ImageBackground
             source={{
               uri: "https://media.istockphoto.com/id/511061090/photo/business-office-building-in-london-england.jpg?s=612x612&w=0&k=20&c=nYAn4JKoCqO1hMTjZiND1PAIWoABuy1BwH1MhaEoG6w=",
@@ -205,6 +205,28 @@ const CompanyCard = ({ route, navigation }) => {
             <Text style={styles.role}>{company.companyName}</Text>
             <Text style={styles.company}>IT Technology Solutions</Text>
           </View>
+        </View> */}
+        <View style={{ position: 'relative',backgroundColor:'blue',width:'100%',height:110 }}>
+          {/* <ImageBackground
+            source={{
+              uri: "https://media.istockphoto.com/id/511061090/photo/business-office-building-in-london-england.jpg?s=612x612&w=0&k=20&c=nYAn4JKoCqO1hMTjZiND1PAIWoABuy1BwH1MhaEoG6w=",
+            }}
+            style={{ height: 200, width: '100%' }}
+          >
+            <View style={[StyleSheet.absoluteFillObject, { backgroundColor: 'black', opacity: 0.4 }]} />
+          </ImageBackground> */}
+
+          <View style={styles.whiteContainer}>
+            {/* <Image source={require("../assets/user.png")} style={styles.logo} /> */}
+            <View>
+            <Ionicons name="person"  color="white" size={75} />
+            </View>
+           
+          </View>
+        </View>
+        <View style={styles.headerText}>
+            <Text style={styles.role}>{company.companyName}</Text>
+            <Text style={styles.company}>IT Technology Solutions</Text>
         </View>
 
         {/* Tabs */}
@@ -231,7 +253,7 @@ const CompanyCard = ({ route, navigation }) => {
                   <TouchableOpacity onPress={() => setActiveTab('review')} style={[styles.tab, activeTab === 'review' && styles.activeTab]}>
                     <Text style={activeTab === 'review' ? styles.activeTabText : styles.tabText}>Review</Text>
                   </TouchableOpacity>
-      </View>
+       </View>
 
         {/* About Content */}
         {activeTab === 'about' && (
@@ -452,9 +474,25 @@ const styles = StyleSheet.create({
     marginTop: 12,
     backgroundColor: '#f0f4ff',
     borderRadius: 15,
-    padding:10
 
-
+  },
+  whiteContainer: {
+    height:110,
+    width:110,
+    position: 'absolute',
+    justifyContent:'center',
+    alignItems:'center',
+    top: 50,
+    left:50,
+    alignSelf: 'center',
+   backgroundColor: '#d5e1f2',
+    borderRadius: 60,
+    padding: 5,
+    elevation: 5,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
   },
   tab: {
     flex: 1,
@@ -466,6 +504,7 @@ const styles = StyleSheet.create({
     backgroundColor:"fff"
   },
   tabText: {
+    padding:6,
     color: '#3d77ff',
     fontWeight: '600',
     textAlign:'center'
@@ -511,18 +550,18 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginRight: 10,
   },
-  whiteContainer: {
-    position: 'absolute',
-    top: 50,
-    alignSelf: 'center',
-    backgroundColor: 'white',
-    borderRadius: 12,
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-  },
+  // whiteContainer: {
+  //   position: 'absolute',
+  //   top: 50,
+  //   alignSelf: 'center',
+  //   backgroundColor: 'white',
+  //   borderRadius: 12,
+  //   elevation: 5,
+  //   shadowColor: '#000',
+  //   shadowOffset: { width: 0, height: 2 },
+  //   shadowOpacity: 0.3,
+  //   shadowRadius: 4,
+  // },
   logo: {
     height: 100,
     width: 100,

@@ -1,8 +1,9 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
+import { StyleSheet, Text, View,TouchableOpacity } from 'react-native';
+import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-
+import { Ionicons } from '@expo/vector-icons'; // or another icon library
+import Icon from 'react-native-vector-icons/MaterialIcons'; 
 // Job Seeker
 import JobSeekerLoginScreen from './screens/JobSeekerLogin';
 import ExperienceScreen from './screens/ExperienceScreen';
@@ -23,6 +24,7 @@ import CompanyDetails from './companyScreens/CompanyDetails';
 
 
 
+
 // Company 
 const Stack=createNativeStackNavigator();
 
@@ -30,16 +32,59 @@ const JobSeekerStack=()=>{
   return(
 
   
-  <Stack.Navigator initialRouteName="Login" options={{headerShown:false}}>
+    <Stack.Navigator
+    initialRouteName="Login"
+    screenOptions={{
+      headerTitle: '', // Hides the title
+      headerBackTitleVisible: false, // Hides the back button text (iOS)
+      headerStyle: {
+     
+        elevation: 0, // Remove shadow on Android
+        shadowOpacity: 0, 
+        borderBottomWidth:0,// Remove shadow on iOS
+      },
+      headerTintColor: '#333', 
+      headerLeft:({canGoBack,navigation})=>{
+      
+        if(!canGoBack){
+          return null
+        }
+        return(
+          <TouchableOpacity onPress={()=>navigation.goBack()} style={{marginLeft:20}}>
+          
+            <View
+            style={{
+              backgroundColor: '#e6eefa',
+              borderRadius: 20,
+              padding: 8,
+              
+            }}
+          >
+            <Ionicons name="arrow-back" size={20} color="#2563EB" />
+          </View>
+           
+            
+          </TouchableOpacity>
+        )
+      }
+    }}
+  >
     <Stack.Screen name="Login" component={JobSeekerLoginScreen}/>
       <Stack.Screen name="SignUp" component={SignupScreen}/>
-      <Stack.Screen name="JobSeeker Dashboard" component={JobSeekerTab}/>
+      <Stack.Screen name="JobSeeker Dashboard" component={JobSeekerTab} options={{
+        headerShown:false
+      }}/>
       <Stack.Screen name="Experience" component={ExperienceScreen}/>
       <Stack.Screen name='Job Details' component={JobDetail}/>
       <Stack.Screen name="Apply Job" component={ApplyJob}/>
       <Stack.Screen name='Job Type' component={JobTypeScreen}/>
       <Stack.Screen name="Basic Info" component={BasicDetailsScreen}/>
-      <Stack.Screen name="User Interest" component={UserInterestForm}/>
+      <Stack.Screen name="User Interest" component={UserInterestForm} options={{headerStyle:{
+        backgroundColor:'#2563EB',
+        elevation: 0, 
+        shadowOpacity: 0, 
+        borderBottomWidth:0
+      }}}/>
 
   
       <Stack.Screen name="Application successfull" component={JobApplicationSuccess}/>

@@ -23,7 +23,7 @@ const Tab=createBottomTabNavigator();
 const Stack=createNativeStackNavigator();
 const JobSeekerTab=()=>{
     return(
-        <Tab.Navigator screenOptions={{headerShown:false}} initialRouteName="Find Jobs">
+        <Tab.Navigator screenOptions={{headerShown:false}} initialRouteName="Home">
             <Tab.Screen name="Home" component={HomeStack} options={{
                                                       tabBarIcon:()=>(
                                                         <Ionicons name="home"  size={24} />
