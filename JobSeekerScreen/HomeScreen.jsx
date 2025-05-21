@@ -194,8 +194,8 @@ const HomeScreen = ({ navigation }) => {
           <Text style={{ color: 'blue', paddingRight: 16 }}>See All</Text>
         </View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-          {jobs.map(job => (
-            <View style={{ marginRight: 10 }}>
+          {jobs.map((job,idx) => (
+            <View key={idx} style={{ marginRight: 10 }}>
               <JobCard key={job.id} item={job} navigation={navigation} />
             </View>
 

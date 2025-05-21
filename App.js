@@ -94,7 +94,7 @@ const JobSeekerStack=()=>{
 }
 const CompanyStack=()=>{
   return (
-  <Stack.Navigator initialRouteName='CompanyLogin' screenOptions={{headerShown:false}}>
+  <Stack.Navigator initialRouteName='CompanyDashboard' screenOptions={{headerShown:false}}>
     <Stack.Screen name='Company Details' component={CompanyDetails}/>
      <Stack.Screen name="CompanyLogin" component={CompanyLogin}/>
      <Stack.Screen name="CompanySignUp" component={CompanySignUp}/>

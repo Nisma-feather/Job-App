@@ -134,14 +134,16 @@ const ApplicationsList = ({ route }) => {
     setJobData(jobsnap.data());
 
   }
+  setMessage
   const updateStatus=async()=>{
     try{
+      
       const jobref=doc(db,'jobApplications',currentApplication.id);
       await updateDoc(jobref,{status:status,statusAt:new Date()});
   
       const MessageRef=collection(db,'users',currentApplication.userId,'messages');
       await addDoc(MessageRef,{
-        message: message,
+        message:message,
         messageAt: new Date(),
         from:jobData.companyName,
         type: 'status_update',
@@ -190,7 +192,7 @@ console.log(applications)
       <TouchableOpacity  style={styles.button} onPress={()=>{setModalVisible(true),setCurrentApplication(item)}}> <Text style={styles.buttonText}>Update Status</Text></TouchableOpacity>
     </View>
   );
-
+console.log(message)
   return (
     <View style={styles.container}>
       <Text style={styles.heading}>Applications</Text>
@@ -206,11 +208,15 @@ console.log(applications)
           <Text style={styles.title}>Update Status</Text>
 
           <View style={styles.buttonGroup}>
-            <TouchableOpacity style={[styles.optionButton, status === 'shortlisted' && styles.selected]} onPress={() => setStatus("shortlisted")}>
+            <TouchableOpacity style={[styles.optionButton, status === 'shortlisted' && styles.selected]} onPress={() => {
+              setMessage(selectionMsg)
+              setStatus("shortlisted")}}>
               <Text style={styles.modalButtonText}>Shortlisted</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={[styles.optionButton, status === 'Not Shortlisted' && styles.selected]} onPress={() => setStatus("Not Shortlisted")}>
+            <TouchableOpacity style={[styles.optionButton, status === 'Not Shortlisted' && styles.selected]} onPress={() =>{ 
+              setMessage(rejectionMSg)
+              setStatus("Not Shortlisted")}}>
               <Text style={styles.modalButtonText}>Rejected</Text>
             </TouchableOpacity>
           </View>
@@ -219,8 +225,8 @@ console.log(applications)
             style={styles.textInput}
             multiline
             placeholder="Enter message..."
-            value={status === 'shortlisted' ? selectionMsg : status === 'Not Shortlisted' ? rejectionMSg : ''}
-            onChangeText={setMessage}
+            value={message}
+            onChangeText={(val)=>setMessage(val)}
           />
 
           <View style={styles.footerButtons}>

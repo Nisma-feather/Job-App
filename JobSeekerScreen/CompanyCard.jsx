@@ -1,4 +1,4 @@
-import { collection, doc, getDoc, getDocs, query, updateDoc, where } from "firebase/firestore";
+import { collection, doc, getDoc,where, getDocs, query, updateDoc, wher,Timestamp } from "firebase/firestore";
 import { ScrollView, View, Image, StyleSheet, TouchableOpacity, Text, Pressable, TextInput, Alert, FlatList } from "react-native";
 import { SafeAreaView } from "react-native";
 import { auth, db } from "../firebaseConfig";
@@ -161,10 +161,15 @@ const CompanyCard = ({ route, navigation }) => {
     }
 
     try {
-      const newReviews = company.reviews ? [...company.reviews] : [];
-      newReviews.push(review);
+      const exsistingReviews=company.reviews || [];
+      const newReview = {
+       ...review,
+       reviewedAt: Timestamp.now() // Use Firestore Timestamp, not new Date()
+     };
+     const updatedReview =[...exsistingReviews,newReview]
+     console.log(updatedReview)
       
-      await updateDoc(doc(db, 'companies', companyUID), { reviews: newReviews });
+      await updateDoc(doc(db, 'companies', companyUID), { reviews: updatedReview });
       
       // Refresh data
       await fetchCompanyDetails();

@@ -16,6 +16,7 @@ import SkillsUpdateScreen from "./ProfileScreens/SkillsScreen";
 import ApplyJob from "./ApplyJob";
 import JobCard from "./JobCard";
 import CompanyCard from "./CompanyCard";
+import Messages, { MessageDetail } from "./Messages";
 
 
 
@@ -33,14 +34,15 @@ const JobSeekerTab=()=>{
                                                       tabBarIcon:()=>(
                                                         <Ionicons name="bookmarks-sharp"  size={24} />
                                                       )}} />
-            <Tab.Screen name="Find Jobs" component={JobStack} options={{
+            {/* <Tab.Screen name="Find Jobs" component={JobStack} options={{
                                                       tabBarIcon:()=>(
                                                         <Ionicons name="search" color="#000" size={24} />
-                                                      )}}/>
+                                                      )}}/> */}
             <Tab.Screen name="Profile" component={ProfileStack} options={{
                                                       tabBarIcon:()=>(
                                                         <Ionicons name="person" color="#000" size={24} />
                                                       )}}/>
+            <Tab.Screen name="Messages" component={MessagesStack} />
 
         </Tab.Navigator>
 
@@ -79,8 +81,17 @@ const HomeStack=()=>{
       <Stack.Screen name="HomeScreen" component={HomeScreen}/>
       <Stack.Screen name="Find Job" component={FindJobScreen}/>
       
+      
      
     
+    </Stack.Navigator>
+  )
+}
+const MessagesStack=()=>{
+  return(
+    <Stack.Navigator>
+      <Stack.Screen name="Messages" component={Messages}/>
+      <Stack.Screen name="MessageDetail" component={MessageDetail} />
     </Stack.Navigator>
   )
 }

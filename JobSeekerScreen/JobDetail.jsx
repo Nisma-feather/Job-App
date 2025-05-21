@@ -1,16 +1,49 @@
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc,updateDoc} from 'firebase/firestore';
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Dimensions } from 'react-native';
-import { db } from '../firebaseConfig';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Foundation from 'react-native-vector-icons/Foundation';
+import { View, Text, TouchableOpacity, StyleSheet, ScrollView, Dimensions,Alert, FlatList, Pressable, TextInput } from 'react-native';
+import { auth,db } from '../firebaseConfig';
+import { Ionicons, Entypo, MaterialCommunityIcons, AntDesign, Foundation } from '@expo/vector-icons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import { AnimatedCircularProgress } from 'react-native-circular-progress';
 
 const JobDetail = ({ route,navigation }) => {
+  const calculateRatingStats = (reviews = []) => {
+    if (!reviews || reviews.length === 0) return {
+      average: 0,
+      total: 0,
+      distribution: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 }
+    };
+  
+    const sum = reviews.reduce((acc, review) => acc + review.star, 0);
+    const average = sum / reviews.length;
+    
+    const distribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+    reviews.forEach(review => {
+      distribution[review.star]++;
+    });
+  
+    return {
+      average: parseFloat(average.toFixed(1)),
+      total: reviews.length,
+      distribution
+    };
+  };
+  
   const { currentJob } = route.params;
   console.log(currentJob.companyUID)
-  const [company, setCompany] = useState({})
+  const [company, setCompany] = useState({});
+  const [star, setStar] = useState(0);
+  const [review, setReview] = useState({
+    star: 0,
+    userName: '',
+    reviewDescription: '',
+    reviewedAt: new Date(),
+  });
+  const [ratingStats, setRatingStats] = useState({
+    average: 0,
+    total: 0,
+    distribution: { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 }
+  });
   const [activeTab, setActiveTab] = useState('description');
 
   const fetchCompany = async () => {
@@ -19,14 +52,98 @@ const JobDetail = ({ route,navigation }) => {
     if (companySnap.exists()) {
       const companyData = companySnap.data();
       setCompany(companyData);
+      // Calculate rating stats
+      const stats = calculateRatingStats(companyData?.reviews);
+      setRatingStats(stats);
 
     }
 
   }
+  const formatReviewTime = (date) => {
+    if (!date) return '';
+    
+    const now = new Date();
+    const reviewDate = date.toDate ? date.toDate() : new Date(date);
+    const diffInHours = Math.floor((now - reviewDate) / (1000 * 60 * 60));
+    
+    if (diffInHours < 1) {
+      const diffInMinutes = Math.floor((now - reviewDate) / (1000 * 60));
+      return `${diffInMinutes} min ago`;
+    } else if (diffInHours < 24) {
+      return `${diffInHours} hr ago`;
+    } else {
+      const diffInDays = Math.floor(diffInHours / 24);
+      return `${diffInDays} day${diffInDays !== 1 ? 's' : ''} ago`;
+    }
+  };
+  const fetchUserData = async () => {
+    const uid = auth.currentUser?.uid;
+      if (!uid) return;
+      
+      try {
+        const ref = doc(db, 'users', uid);
+        const snapUserData = await getDoc(ref);
+        const userName = snapUserData.data()?.personalData?.name;
+        setReview(prev => ({ ...prev, userName }));
+      } catch (e) {
+        Alert.alert("Error", "Cannot fetch user details");
+      }
+    };
+  
   useEffect(() => {
     fetchCompany();
+    fetchUserData();
   }, [])
-  console.log(company)
+ const handleReviewSelection = (val) => {
+    if (val === star) {
+      setStar(0);
+      setReview({ ...review, star: 0 });
+    } else {
+      setStar(val);
+      setReview({ ...review, star: val });
+    }
+  };
+  const formatNumber = (num) => {
+    if (num >= 1000) {
+      return (num / 1000).toFixed(1) + 'k';
+    }
+    return num.toString();
+  };
+  
+  const handlePostReview = async () => {
+    console.log("trying to post")
+    if (review.star === 0) {
+      Alert.alert("Error", "Please select a star rating");
+      return;
+    }
+
+    try {
+      const exsistingReviews=company.reviews || [];
+       const newReview = {
+        ...review // Use Firestore Timestamp, not new Date()
+      };
+      const updatedReview =[...exsistingReviews,newReview]
+
+      await updateDoc(doc(db, 'companies', currentJob.companyUID), { reviews: updatedReview });
+      
+      // Refresh data
+      await fetchCompany();
+      
+      // Reset form
+      setStar(0);
+      setReview({
+        ...review,
+        star: 0,
+        reviewDescription: ''
+      });
+      console.log("review posted successfully");
+      Alert.alert("Success", "Your review has been posted");
+    } catch (e) {
+      console.log(e)
+      Alert.alert("Error", "Failed to post review");
+    }
+  };
+  console.log(review.star)
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scroll}>
@@ -128,9 +245,118 @@ const JobDetail = ({ route,navigation }) => {
             </>
           )}
 
-          {activeTab === 'review' && (
-            <Text style={styles.heading}>Reviews not available</Text>
-          )}
+           {activeTab === 'review' && (
+                    <View style={styles.reviewContainer} >
+                      {/* Rating Summary */}
+                      <View style={styles.ratingSummaryContainer}>
+                        <View style={styles.ratingOverview}>
+                          <View style={{flexDirection:'row',alignItems:'center'}}>
+                         
+                          <Text style={styles.ratingOutOf}> <Text style={styles.averageRating}>{ratingStats.average}</Text>/5</Text>
+                          
+          
+          <AnimatedCircularProgress
+            size={30}
+            width={5}
+            fill={ratingStats.average * 20}
+            tintColor="#FFD700"
+            backgroundColor="#f0f0f0">
+          
+          </AnimatedCircularProgress>
+          
+          
+                          </View>
+                        
+                          <Text style={styles.totalReviews}>Based on {formatNumber(ratingStats.total)} reviews</Text>
+          
+                          <View style={styles.starsContainer}>
+                            {[1, 2, 3, 4, 5].map((num) => (
+                              <AntDesign key={num} name="star"  color={num <= Math.round(ratingStats.average) ? "#FFD700" : "#CCCCCC"}  size={22} />
+                              
+                            ))}
+                          </View>
+                         
+                        </View>
+                        
+                        {/* Rating Distribution */}
+                        <View style={styles.ratingDistribution}>
+                          {[5, 4, 3, 2, 1].map((stars) => (
+                            <View key={stars} style={styles.ratingBarContainer}>
+                              <Text style={styles.ratingLabel}>{stars} star</Text>
+                              <View style={styles.ratingBarBackground}>
+                                <View 
+                                  style={[
+                                    styles.ratingBarFill,
+                                    { 
+                                      width: `${ratingStats.total > 0 
+                                        ? (ratingStats.distribution[stars] / ratingStats.total) * 100 
+                                        : 0}%`
+                                    }
+                                  ]}
+                                />
+                              </View>
+                            </View>
+                          ))}
+                        </View>
+                      </View>
+                      
+                      {/* Reviews List */}
+                      <Text style={styles.reviewSectionTitle}>Employee Reviews</Text>
+                      
+                      <FlatList 
+                        data={company.reviews || []}
+                        renderItem={({item}) => (
+                          <View style={styles.reviewCard}>
+                            <View style={styles.reviewHeader}>
+                              <Text style={styles.reviewerName}>{item.userName}</Text>
+                              <Text style={styles.reviewTime}>{formatReviewTime(item.reviewedAt)}</Text>
+                            </View>
+                            
+                            <View style={styles.starContainer}>
+                              {[1, 2, 3, 4, 5].map((num) => (
+                                <View key={num}>
+                                  {<AntDesign key={num} name="star"  color={item.star >= num  ? "#FFD700" : "#CCCCCC"}  size={16} />
+                                  }
+                                </View>
+                              ))}
+                            </View>
+                            
+                            <Text style={styles.reviewText}>{item.reviewDescription}</Text>
+                          </View>
+                        )}
+                        keyExtractor={(item, index) => index.toString()}
+                      />
+                      
+                      {/* Add Review Section */}
+                      <View style={styles.addReviewContainer}>
+                        <Text style={styles.addReviewTitle}>Add Your Review</Text>
+                        
+                        <View style={styles.starRatingContainer}>
+                          {[1, 2, 3, 4, 5].map((num) => (
+                            <Pressable key={num} onPress={() => handleReviewSelection(num)}>
+                              {<AntDesign key={num} name="star"  color={star >= num  ? "#FFD700" : "#CCCCCC"}  size={18} />
+                              
+                              
+                        
+                              }
+                            </Pressable>
+                          ))}
+                        </View>
+                        
+                        <TextInput 
+                          multiline 
+                          placeholder="Write your review here..." 
+                          style={styles.reviewInput}
+                          value={review.reviewDescription}
+                          onChangeText={(val) => setReview({...review, reviewDescription: val})}
+                        />
+                        
+                        <Pressable style={styles.postButton} onPress={handlePostReview}>
+                          <Text style={styles.postButtonText}>Post Review</Text>
+                        </Pressable>
+                      </View>
+                    </View>
+                  )}
         </View>
       </ScrollView>
 
@@ -285,5 +511,170 @@ const styles = StyleSheet.create({
   },
   iconText:{
   fontWeight:'bold',
-  }
+  },
+  reviewContainer: {
+
+    padding: 16,
+  },
+  ratingSummaryContainer: {
+  
+    backgroundColor: '#fff',
+    borderRadius: 12,
+    padding: 16,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  ratingOverview: {
+   
+    alignItems: 'center',
+    marginBottom: 16,
+    gap:10,
+    justifyContent:'center'
+  },
+  averageRating: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    color: '#000',
+    marginRight: 4,
+  },
+  ratingOutOf: {
+    fontSize: 16,
+    color: '#666',
+    fontWeight:'bold',
+    marginRight: 16,
+  },
+  starsContainer: {
+    flexDirection: 'row',
+    marginRight: 16,
+    gap:3
+  },
+  totalReviews: {
+    fontSize: 14,
+    color: '#666',
+  },
+  ratingDistribution: {
+    marginTop: 8,
+  },
+  ratingBarContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  ratingLabel: {
+    width: 60,
+    fontSize: 12,
+    color: '#666',
+  },
+  ratingBarBackground: {
+    flex: 1,
+    height: 8,
+    backgroundColor: '#f0f0f0',
+    borderRadius: 4,
+    marginHorizontal: 8,
+    overflow: 'hidden',
+  },
+  ratingBarFill: {
+    height: '100%',
+    backgroundColor: '#FFD700',
+    borderRadius: 4,
+  },
+  ratingCount: {
+    width: 30,
+    fontSize: 12,
+    color: '#666',
+    textAlign: 'right',
+  },
+  reviewSectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    color: '#000',
+  },
+  reviewCard: {
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    padding: 16,
+    marginBottom: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  reviewHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 8,
+  },
+  reviewerName: {
+    fontWeight: 'bold',
+    color: '#000',
+  },
+  reviewTime: {
+    color: '#666',
+    fontSize: 12,
+  },
+  starContainer: {
+    flexDirection: 'row',
+    marginBottom: 8,
+  },
+  reviewText: {
+    color: '#333',
+    lineHeight: 20,
+  },
+  addReviewContainer: {
+    marginTop: 20,
+    padding: 16,
+    backgroundColor: '#f9f9f9',
+    borderRadius: 8,
+  },
+  addReviewTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 16,
+    color: '#000',
+  },
+  starRatingContainer: {
+    flexDirection: 'row',
+    marginBottom: 16,
+  },
+  reviewInput: {
+    width: '100%',
+    minHeight: 100,
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderRadius: 8,
+    padding: 12,
+    marginBottom: 16,
+    color: '#333',
+    textAlignVertical: 'top',
+  },
+  postButton: {
+    backgroundColor: '#1967d2',
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  postButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  circularRatingContainer: {
+    height: 10,
+    width: '100%',
+    backgroundColor: '#f0f0f0',
+    borderRadius: 5, // Makes it circular
+    overflow: 'hidden', // Ensures the fill stays within bounds
+    marginVertical: 8,
+  },
+  circularRatingFill: {
+    height: '100%',
+    backgroundColor: '#FFD700', // Gold color for rating
+    borderRadius: 5, // Match container radius
+  },
+
 });
