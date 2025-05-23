@@ -242,5 +242,39 @@ const HomeScreen = ({ navigation }) => {
     </ScrollView>
   );
 };
+export const Customheader=({navigation})=>{
+  return(
+    <View style={{ flexDirection: 'row', alignItems: 'center', padding: 16, gap: 12,backgroundColor:'white'}}>
+    <Ionicons name="menu" size={24} />
+    <Pressable onPressIn={() => navigation.navigate("Find Job")} style={{ flex: 1, }}>
+      <TextInput
+        placeholder="Search Jobs..."
+        placeholderTextColor="#666"
+        
+        editable={false}
+        style={{
+
+          backgroundColor: 'white',
+          borderRadius: 20,
+          paddingVertical: 10,
+          paddingHorizontal: 12,
+          shadowColor:'#000',
+          shadowOpacity:0.2,
+          shadowOffset:{
+            height:1,
+            width:0
+          },
+          shadowRadius:2
+
+
+        }}
+      />
+    </Pressable>
+    <Ionicons name="notifications-outline" size={24} />
+  </View>
+
+
+  )
+}
 
 export default HomeScreen;

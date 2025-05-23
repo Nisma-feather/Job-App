@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
-import { View,Text, ScrollView, StyleSheet,Image,FlatList,Pressable} from 'react-native'
+import { View, Text, ScrollView, StyleSheet, Image, FlatList, Pressable, ActivityIndicator } from 'react-native'
 import { auth, db } from '../firebaseConfig'
-import { collection, deleteDoc, doc, getDoc, getDocs, query,where } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDoc, getDocs, query, where } from 'firebase/firestore';
 import { SafeAreaView } from 'react-native';
 import Entypo from 'react-native-vector-icons/Entypo';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -10,102 +10,154 @@ import Feather from 'react-native-vector-icons/Feather';
 import dummyimg from "../assets/icon.png"
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { useCallback } from 'react';
+import JobCard from './JobCard';
 
-const BookMarkScreen = () => {
-  const navigation=useNavigation();
-  const uid=auth.currentUser?.uid || "fA9DeooDHHOpjgsLXiGi2VFeE4y2";
+const BookMarkScreen = ({ navigation }) => {
+  // const navigation=useNavigation();
+  const [loading,setLoading]=useState(false);
+  const uid = auth.currentUser?.uid;
   console.log(uid);
-  const [bookmarks,setBookmarks]=useState([]);
-  const fetchBookmarks=async()=>{
-try{
-  const q=query(collection(db,'bookmarks'),where('userId','==',uid));
-const bookmarkSnap=await getDocs(q);
+  const [bookmarks, setBookmarks] = useState([]);
+  const fetchBookmarks = async () => {
+    setLoading(true);
+    try {
+      const q = query(collection(db, 'bookmarks'), where('userId', '==', uid));
+      const bookmarkSnap = await getDocs(q);
 
- const bookmarkdatas=[];
-const jobIds=bookmarkSnap.docs.map((bookmark)=>bookmark.data().jobId);
-for(const jobId of jobIds){
-  const ref=doc(db,'jobs',jobId);
-  const jobSnap=await getDoc(ref);
+      const bookmarkdatas = [];
+      const jobIds = bookmarkSnap.docs.map((bookmark) => bookmark.data().jobId);
+      for (const jobId of jobIds) {
+        const ref = doc(db, 'jobs', jobId);
+        const jobSnap = await getDoc(ref);
 
-  if( jobSnap.exists()){
-     const jobData=jobSnap.data();
-     let companyName='Unknown Company'
-    console.log(jobData.companyUID);
-     if(jobData.companyUID){
-      const companyRef=doc(db,'companies',jobData.companyUID);
-      const companysnap=await getDoc(companyRef);
-      const companyName=companysnap.data().companyName || companyName;
-     }
-     bookmarkdatas.push({id:jobId,...jobData,companyName})
+        if (jobSnap.exists()) {
+          const jobData = jobSnap.data();
+          let companyName = 'Unknown Company'
+          console.log(jobData.companyUID);
+          if (jobData.companyUID) {
+            const companyRef = doc(db, 'companies', jobData.companyUID);
+            const companysnap = await getDoc(companyRef);
+            
+            companyName = companysnap.data().companyName || companyName;
+          }
+          bookmarkdatas.push({ id: jobId, ...jobData, companyName })
+        }
+
+      }
+      setLoading(false);
+      setBookmarks(bookmarkdatas)
+    }
+    catch (e) {
+      console.log(e);
+      setLoading(false)
+    }
+
   }
-  
-}
-setBookmarks(bookmarkdatas)
-}
-catch(e){
-  console.log(e);
-}
-   
-  }
-const removeBookmark=async(jobId)=>{
-    const q=query(collection(db,'bookmarks'),where('userId','==',uid),where('jobId','==',jobId));
-    const snapdata=await getDocs(q);
-    await deleteDoc(doc(db,'bookmarks',snapdata.docs[0].id));
-    const newBookmark=bookmarks.filter((bookmark)=>jobId !==bookmark.id)
+  console.log(bookmarks)
+  const removeBookmark = async (jobId) => {
+    const q = query(collection(db, 'bookmarks'), where('userId', '==', uid), where('jobId', '==', jobId));
+    const snapdata = await getDocs(q);
+    await deleteDoc(doc(db, 'bookmarks', snapdata.docs[0].id));
+    const newBookmark = bookmarks.filter((bookmark) => jobId !== bookmark.id)
     setBookmarks(newBookmark);
-}
+  }
+  const formatDate = (timeStamp) => {
+    if (!timeStamp) return '';
+    if (!timeStamp) return '';
+
+  const postedDate = timeStamp.toDate();
+  const now = new Date();
+  const differenceDate = Math.floor((now - postedDate) / (1000 * 60 * 60 * 24));
+
+  if (differenceDate === 0) {
+    const diffHours = Math.floor((now - postedDate) / (1000 * 60 * 60));
+    
+    if (diffHours === 0) {
+      const diffMinutes = Math.floor((now - postedDate) / (1000 * 60));
+      return diffMinutes <= 1 ? '1 minute ago' : `${diffMinutes} minutes ago`;
+    }
+
+    return diffHours === 1 ? '1 hour ago' : `${diffHours} hours ago`;
+  }
+
+  return differenceDate === 1 ? '1 day ago' : `${differenceDate} days ago`;
+
+  }
   console.log(bookmarks)
   useFocusEffect(
-  useCallback(() => {
-    fetchBookmarks();
-  }, [])
-);
+    useCallback(() => {
+      fetchBookmarks();
+    }, [])
+  );
   return (
-    <SafeAreaView>
-      <ScrollView>
-        
-              <View style={styles.listJobs}>
-                <FlatList
-                  data={bookmarks}
-                  renderItem={({ item }) => (
-                    <Pressable onPress={()=>navigation.navigate("Job Details",{currentJob:item})}>
-                    <View style={styles.jobItem}>
-                    <Image source={dummyimg} style={styles.logo} />
-                  
-                    <View style={{ flex: 1 }}>
-                      <Text style={styles.jobTitle}>{item.jobrole}</Text>
-                      {/* <Text style={styles.companyName}>{item.companyName}</Text> */}
-                  
-                      <View style={styles.metaRow}>
-                        <Entypo name="location-pin" color="#666" size={18} />
-                        <Text style={styles.metaText}>{item.locations}</Text>
-                      </View>
-                  
-                      <View style={styles.metaRow}>
-                        <MaterialCommunityIcons name="office-building-outline" color="#666" size={18} />
-                        <Text style={styles.metaText}>{item.jobType}</Text>
-                      </View>
-                    </View>
-                  
-                    <Pressable style={styles.bookmarkIcon} onPress={()=>removeBookmark(item.id)}>
-                      <Ionicons name={bookmarks.some(b => b.id === item.id)?"bookmark":'bookmark-outline'} color="#333" size={22} />
-                    </Pressable>
-                  </View>
-                  </Pressable>
-                  )}
-                  keyExtractor={(item) => item.id.toString()}
-                />
-              </View>
-      </ScrollView>
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+      
+{
+  loading ? <View style={{alignItems:'center',justifyContent:'center',flex:1}}><ActivityIndicator animating={loading} size="large"/></View>  :
+  <ScrollView>
+        <View style={styles.listJobs}>
+          <FlatList
+            data={bookmarks}
+            renderItem={({ item }) => (
+              <Pressable onPress={() => navigation.navigate("Job Details", { currentJob: item })}>
+                 <View style={styles.jobItem}>
+      <View style={{flexDirection:'row',justifyContent:'space-between',height:'40%',maxHeight:45}}>
+        <View style={{flexDirection:"row",gap:10,}}>
+          
+            <View style={{width:40,height:40,borderWidth:1,borderColor:'#dedede',justifyContent:'center',alignItems:'center',borderRadius:6,}}>
+          <Image source={dummyimg} style={styles.logo} />
+          </View>
+         
+          <View style={{justifyContent:'space-between'}}>
+            <Text style={styles.jobTitle}>{item.jobrole}</Text>
+            <Text style={styles.companyName}>{item.companyName}</Text>
+
+          </View>
+
+          </View>
+          
+          <Pressable style={styles.bookmarkIcon} onPress={() => removeBookmark(item.id)}>
+            <Ionicons name="bookmark" color="#4B9CD3"  size={22} />
+          </Pressable>
+
+        </View>
+        <View style={{flexDirection:'row',gap:8}}>
+          <View style={{paddingVertical:5,paddingHorizontal:12,backgroundColor:"#e8f0fb"}}>
+           <Text style={{fontWeight:'bold',fontSize:12}}>{item.jobType}</Text>
+          </View>
+          <View style={{paddingVertical:5,paddingHorizontal:12,backgroundColor:"#e8f0fb"}}>
+            <Text style={{fontWeight:'bold',fontSize:12}}>{item.jobMode}</Text>
+          </View>
+        </View>
+        <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:"center",height:35,borderTopColor:'#dedede',borderTopWidth:1}}>
+          <View style={styles.metaRow}>
+            <Entypo name="location-pin" color="#9ca4b5" size={18} />
+            <Text style={styles.metaText}>{item.locations}</Text>
+          </View>
+          <Text style={styles.metaText}>
+            {formatDate(item.postedAt)}
+          </Text>
+
+        </View>
+      </View>
+              </Pressable>
+            )}
+            keyExtractor={(item) => item.id.toString()}
+          />
+      
+        </View>
+        </ScrollView>
+}
+    
     </SafeAreaView>
   )
 }
 
 export default BookMarkScreen;
-const styles= StyleSheet.create({
+const styles = StyleSheet.create({
   listJobs: {
     padding: 15,
-    marginTop:60
+    marginTop: 60
   },
   logo: {
     width: 50,
@@ -114,45 +166,42 @@ const styles= StyleSheet.create({
     marginRight: 12,
     alignSelf: 'center',
   },
-  
   jobItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-    borderRadius: 12,
+
+    padding: 10,
+    borderRadius: 6,
     backgroundColor: '#fff',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
+    shadowOpacity: 0.2,
     shadowRadius: 4,
     elevation: 2,
     marginBottom: 12,
+    gap:15
   },
-  
   jobTitle: {
     fontSize: 16,
     fontWeight: '700',
     color: '#333',
   },
-  
   companyName: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#666',
+    color:"#5c88ea",
     marginBottom: 4,
   },
-  
   metaRow: {
     flexDirection: 'row',
     alignItems: 'center',
     marginTop: 4,
   },
-  
+
   metaText: {
     fontSize: 13,
     color: '#555',
     marginLeft: 4,
   },
-  
+
   bookmarkIcon: {
     marginLeft: 10,
     alignSelf: 'flex-start',

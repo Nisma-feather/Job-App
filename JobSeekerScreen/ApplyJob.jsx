@@ -44,8 +44,10 @@ const ApplyJob = ({navigation,route}) => {
                 ...jobForm,
                 cvFile: cvFile ? cvFile.name : null,
                 notified: false,
-                submittedAt: new Date()
+                submittedAt: new Date(),
+                status:"applied",
             };
+            console.log(data)
             await addDoc(collection(db, 'jobApplications'), data);
             console.log("Job Application Submitted");
             navigation.navigate("Application successfull")

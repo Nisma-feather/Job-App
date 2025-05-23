@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import dummyimg from "../assets/icon.png";
+
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {
   SafeAreaView,

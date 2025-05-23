@@ -23,28 +23,7 @@ const Messages = () => {
       console.log(e);
     }
   };
-  const formatDate = (timeStamp) => {
-    if (!timeStamp) return '';
-    if (!timeStamp) return '';
 
-  const postedDate = timeStamp.toDate();
-  const now = new Date();
-  const differenceDate = Math.floor((now - postedDate) / (1000 * 60 * 60 * 24));
-
-  if (differenceDate === 0) {
-    const diffHours = Math.floor((now - postedDate) / (1000 * 60 * 60));
-    
-    if (diffHours === 0) {
-      const diffMinutes = Math.floor((now - postedDate) / (1000 * 60));
-      return diffMinutes <= 1 ? '1 m ago' : `${diffMinutes} ms ago`;
-    }
-
-    return diffHours === 1 ? '1 hr ago' : `${diffHours} hrs ago`;
-  }
-
-  return differenceDate === 1 ? '1 d ago' : `${differenceDate} ds ago`;
-
-  }
 
   useEffect(() => {
     fetchUserMessages();
@@ -152,6 +131,8 @@ const styles = StyleSheet.create({
   chatContainer: {
     flexDirection: 'column',
     alignItems: 'flex-start',
+    paddingHorizontal:18,
+    paddingVertical:5
   },
   receivedBubble: {
     backgroundColor: 'rgb(232, 240, 251)',
@@ -178,18 +159,37 @@ const styles = StyleSheet.create({
     textAlign: 'right',
   },
 });
+const formatDate = (timeStamp) => {
+  if (!timeStamp) return '';
+
+const postedDate = timeStamp.toDate();
+const now = new Date();
+const differenceDate = Math.floor((now - postedDate) / (1000 * 60 * 60 * 24));
+
+if (differenceDate === 0) {
+  const diffHours = Math.floor((now - postedDate) / (1000 * 60 * 60));
+  
+  if (diffHours === 0) {
+    const diffMinutes = Math.floor((now - postedDate) / (1000 * 60));
+    return diffMinutes <= 1 ? '1 m ago' : `${diffMinutes} ms ago`;
+  }
+
+  return diffHours === 1 ? '1 hr ago' : `${diffHours} hrs ago`;
+}
+
+return differenceDate === 1 ? '1 d ago' : `${differenceDate} ds ago`;
+
+}
 
 export const MessageDetail = ({ route }) => {
     const { message } = route.params;
   
     return (
       <SafeAreaView style={styles.Chatpagecontainer}>
-        <Text style={styles.header}>From: {message.from}</Text>
-        
         <View style={styles.chatContainer}>
           <View style={styles.receivedBubble}>
             <Text style={styles.messageText}>{message.message}</Text>
-            <Text style={styles.timestamp}>Just now</Text>
+            <Text style={styles.timestamp}>{formatDate(message.messageAt)}</Text>
           </View>
         </View>
       </SafeAreaView>

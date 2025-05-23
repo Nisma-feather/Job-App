@@ -74,6 +74,14 @@ const ProfileScreen = () => {
               <Text style={{ color: "#3a7bd6" }}>Add +</Text>
               
             </TouchableOpacity>
+            <TouchableOpacity style={styles.sectionItem} onPress={() => navigation.navigate('Track Application')}>
+              <View style={styles.headindContainer}>
+              <Ionicons name="document-text" color="#6297e0" size={24} />
+              <Text style={styles.sectionText}>Track Application</Text>
+              </View>
+              
+              
+            </TouchableOpacity>
           </View>
         </View>
 

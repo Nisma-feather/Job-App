@@ -214,7 +214,7 @@ console.log(message)
               <Text style={styles.modalButtonText}>Shortlisted</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={[styles.optionButton, status === 'Not Shortlisted' && styles.selected]} onPress={() =>{ 
+            <TouchableOpacity style={[styles.optionButton, status === 'notShortlisted' && styles.selected]} onPress={() =>{ 
               setMessage(rejectionMSg)
               setStatus("Not Shortlisted")}}>
               <Text style={styles.modalButtonText}>Rejected</Text>

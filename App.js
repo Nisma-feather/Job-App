@@ -30,8 +30,6 @@ const Stack=createNativeStackNavigator();
 
 const JobSeekerStack=()=>{
   return(
-
-  
     <Stack.Navigator
     initialRouteName="Login"
     screenOptions={{
@@ -110,7 +108,7 @@ const CompanyStack=()=>{
 export default function App() {
   return (
    <NavigationContainer>
-    <Stack.Navigator initialRouteName='JobSeekerStack' >
+    <Stack.Navigator initialRouteName='CompanyStack' >
       <Stack.Screen name="Role" component={RoleSelectionScreen}/>
       <Stack.Screen name="JobSeekerStack" component={JobSeekerStack} options={{headerShown:false}}/>
       <Stack.Screen name="CompanyStack" component={CompanyStack} options={{headerShown:false}}/>
