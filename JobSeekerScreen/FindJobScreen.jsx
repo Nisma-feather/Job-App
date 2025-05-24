@@ -35,7 +35,7 @@ const FindJobScreen = ({navigation}) => {
   const [jobTypeFilter, setJobTypeFilter] = useState([]);
   const [jobModeFilter, setJobModeFilter] = useState([]);
   const [bookmarkJobs, setBookmarkJobs] = useState([]);
-  const [options, setOptions] = useState("companies");
+  const [options, setOptions] = useState("jobs");
   const [showOption, setShowOption] = useState(false);
   const [companyList, setCompanyList] = useState([]);
   const [searchTimeout, setSearchTimeout] = useState(null);
@@ -379,6 +379,37 @@ const FindJobScreen = ({navigation}) => {
     },
     filteredButtonText:{
       color:'black'
+    },
+    dropdownContainer: {
+      position: 'absolute',
+      top: 60,
+      right: 10,
+      width: 150,
+      backgroundColor: '#ffffff',
+      borderRadius: 8,
+      shadowColor: '#000',
+      shadowOffset: { width: 0, height: 2 },
+      shadowOpacity: 0.1,
+      shadowRadius: 5,
+      elevation: 4,
+      zIndex: 99,
+      paddingVertical: 5,
+    },
+    
+    dropdownItem: {
+      paddingVertical: 10,
+      paddingHorizontal: 15,
+      borderColor: '#eee',
+      borderWidth: 1,
+    },
+    dropdownActive:{
+         backgroundColor:"rgb(230, 238, 250)"
+    },
+    
+    dropdownItemText: {
+      fontSize: 14,
+      color: '#333',
+      textAlign: 'left',
     }
   });
 
@@ -415,23 +446,22 @@ console.log(companyList)
 
   {/* Dropdown options */}
   {showOption && (
-    <View style={{position:'absolute', top:30,right:10,width:200,height:120,
-      padding:5,backgroundColor:'#f7f7f7'
-    }}>
-      {optionData.map((item, index) => (
-        <Pressable
-          key={index}
-          onPress={() => {
-            setOptions(item);
-            setShowOption(false);
-          }}
-          style={styles.dropdownItem}
-        >
-          <Text style={{textAlign:'center'}}>{item}</Text>
-        </Pressable>
-      ))}
-    </View>
-  )}
+  <View style={styles.dropdownContainer}>
+    {optionData.map((item, index) => (
+      <Pressable
+        key={index}
+        onPress={() => {
+          setOptions(item);
+          setShowOption(false);
+        }}
+        style={[styles.dropdownItem,options===item && styles.dropdownActive]}
+      >
+        <Text style={styles.dropdownItemText}>{item.charAt(0).toUpperCase() + item.slice(1)}</Text>
+      </Pressable>
+    ))}
+  </View>
+)}
+
 </View>
 
           {/* Apply Filter Button */}

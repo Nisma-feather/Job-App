@@ -9,6 +9,8 @@ import CompanyProfileEdit from "./CompanyProfileEdit";
 import PostJobHome from "./PostJobHome";
 import PostJobEdit from "./PostJobEdit";
 import UserProfile from "./UserProfile";
+import Ionicons from 'react-native-vector-icons/Ionicons';
+
 
 const Tab=createBottomTabNavigator();
 const Stack=createNativeStackNavigator();
@@ -16,14 +18,35 @@ const Stack=createNativeStackNavigator();
 const CompanyDashboard = () => {
    
   return (
-    <Tab.Navigator screenOptions={{
-      tabBarActiveTintColor:'blue',
-      tabBarInactiveTintColor:"gray"
-  }} initialRouteName="View Applications">
-      <Tab.Screen name="company Profile" component={CompanyProfileStack}/>
-      <Tab.Screen name="Posted Jobs" component={CompanyPostJobStack}/>
-      <Tab.Screen name="notfication" component={Notifications}/>
-      <Tab.Screen name="View Applications" component={JobApplicationStack}/>
+    <Tab.Navigator screenOptions={({route})=>({
+     
+     
+      tabBarIcon:({focused,color,size})=>{
+        let Iconname;
+        if(route.name==='company Profile'){
+          Iconname=focused?'person':'person-outline'
+        }
+        else if(route.name==='Posted Jobs'){
+          Iconname=focused?'browsers':"browsers-outline"
+        }
+        else if(route.name==='View Applications'){
+           Iconname=focused?'home':'home-outline'
+        }
+        return  <Ionicons name={Iconname} color={color} size={24} />
+      },
+      tabBarActiveTintColor:'#0a66c2',
+      tabBarInactiveTintColor:"#666",
+      tabBarShowLabel:false,
+      tabBarItemStyle:{
+        height:50
+      }
+
+  })} initialRouteName="View Applications">
+      <Tab.Screen name="company Profile" component={CompanyProfileStack} options={{headerShown:false}}/>
+      <Tab.Screen name="View Applications" component={JobApplicationStack} options={{headerShown:false}}/>
+      <Tab.Screen name="Posted Jobs" component={CompanyPostJobStack} options={{headerShown:false}}/>
+      {/* <Tab.Screen name="notfication" component={Notifications}/> */}
+      
       
   </Tab.Navigator>
   )
@@ -54,7 +77,7 @@ const CompanyProfileStack=()=>{
 const CompanyPostJobStack=()=>{
   return(
     <Stack.Navigator>
-      <Stack.Screen name="Post Job HomeScreen" component={PostJobHome}/>
+      <Stack.Screen name="Post Job HomeScreen" component={PostJobHome} />
       <Stack.Screen name="Post Job" component={PostJob}/>
       <Stack.Screen name="Edit Job" component={PostJobEdit}/>
 

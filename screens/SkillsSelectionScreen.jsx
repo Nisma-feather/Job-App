@@ -13,7 +13,7 @@ const SkillsSelectionScreen = ({ selected, onSelect }) => {
     );
 
     if (trimmedSkill && !skillExists) {
-      const updatedSkills = [...skills, { skill: trimmedSkill }];
+      const updatedSkills = [...skills, trimmedSkill ];
       setSkills(updatedSkills);
       onSelect(updatedSkills);
       setNewSkill('');

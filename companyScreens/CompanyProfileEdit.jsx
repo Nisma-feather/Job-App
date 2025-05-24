@@ -116,6 +116,7 @@ export default function CompanyProfileEdit({navigation}) {
     console.log("Error in updating profile",e)
     }
   }
+
   useEffect(()=>{
     fetchCompany()
   },[])

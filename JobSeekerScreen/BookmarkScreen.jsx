@@ -94,8 +94,12 @@ const BookMarkScreen = ({ navigation }) => {
       
 {
   loading ? <View style={{alignItems:'center',justifyContent:'center',flex:1}}><ActivityIndicator animating={loading} size="large"/></View>  :
-  <ScrollView>
-        <View style={styles.listJobs}>
+  <ScrollView contentContainerStyle={{flex:1}}>
+       {bookmarks.length===0?
+       <View style={{flex:1,justifyContent:'center',alignItems:'center'}}>
+        <Image source={{uri:'https://cdn-icons-png.flaticon.com/128/892/892340.png'}} style={{height:50,width:50}}/>
+        <Text style={{fontSize:18,fontWeight:'bold',color:"#555",marginVertical:10}}>No Bookmarks Yet</Text></View>:
+         <View style={styles.listJobs}>
           <FlatList
             data={bookmarks}
             renderItem={({ item }) => (
@@ -145,7 +149,7 @@ const BookMarkScreen = ({ navigation }) => {
             keyExtractor={(item) => item.id.toString()}
           />
       
-        </View>
+        </View>}
         </ScrollView>
 }
     

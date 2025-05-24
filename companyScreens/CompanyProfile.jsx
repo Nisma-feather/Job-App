@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState,useLayoutEffect } from 'react'
 import { SafeAreaView, View, Text, ActivityIndicator, StyleSheet, ScrollView, Image, Pressable, TextInput, TouchableOpacity } from 'react-native'
 import { auth, db } from '../firebaseConfig';
 import { doc, getDoc } from 'firebase/firestore';
@@ -35,121 +35,146 @@ const CompanyProfile = ({ navigation }) => {
     setLoading(false);
 
   };
+    useLayoutEffect(()=>{
+     navigation.setOptions({
+        title:profile.companyName
+     })
+    },[navigation,profile])
   useEffect(() => {
     fetchCompanay();
   }, [])
   console.log(profile)
 
+  if (loading) {
+    return (
+      <SafeAreaView style={styles.centered}>
+        <ActivityIndicator size="large" color="#0a66c2" />
+      </SafeAreaView>
+    );
+  }
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
-      <ScrollView>
-        <View style={{ flex: 1 }}>
-          {/* <View style={{ position: 'relative' }}>
-            <ImageBackground
-              source={{
-                uri: "https://media.istockphoto.com/id/511061090/photo/business-office-building-in-london-england.jpg?s=612x612&w=0&k=20&c=nYAn4JKoCqO1hMTjZiND1PAIWoABuy1BwH1MhaEoG6w=",
-              }}
-              style={{ height: 200, width: '100%' }}
-            >
-            </ImageBackground>
-
-            <View style={styles.whiteContainer}>
-              <Image source={{ uri: require("../assets/logo.png") }} style={styles.logo} />
-            </View>
-
-
-
-          </View> */}
-           <View style={{ position: 'relative',backgroundColor:'blue',width:'100%',height:100 }}>
-
-          <View style={styles.whiteContainer}>
-            {/* <Image source={require("../assets/user.png")} style={styles.logo} /> */}
-            <View>
-            <Ionicons name="person"  color="white" size={75} />
-            </View>
-           
-          </View>
-        </View>
-          <View style={{ padding: 20, gap: 4 }}>
-            <Text style={{ marginTop: 50, fontSize: 16, fontWeight: 'bold' }}>{profile.companyName}</Text>
-            <Text>short description</Text>
-
-            <View style={styles.editContainer}>
-
-              <View>
-                <Text style={styles.subheading}>About</Text>
-                <Text>{profile.basicInfo}</Text>
-                <Text style={styles.subheading}>Website</Text>
-                <Text>{profile.website}</Text>
-                <Text style={styles.subheading} >Location</Text>
-                <Text>{profile.locations}</Text>
-                <Text style={styles.subheading}>Established Year</Text>
-                <Text>{profile.startYear}</Text>
-                <Text style={styles.subheading}>Employee Count</Text>
-                <Text>{profile.employeeCount}</Text>
-
-              </View>
-              <Pressable onPress={() => navigation.navigate("Profile edit")}>
-
-                <Feather name="edit" color="black" size={20} />
-              </Pressable>
-
-
-            </View>
-          </View>
-
-
-
-          <View>
-
+    <SafeAreaView style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scroll}>
+        {/* Header Banner */}
+        <View style={styles.banner}>
+          <View style={styles.avatarContainer}>
+            <Ionicons name="business" size={70} color="white" />
           </View>
         </View>
 
+        {/* Company Info */}
+        <View style={styles.content}>
+          <Text style={styles.name}>{profile.companyName}</Text>
+          <Text style={styles.subtitle}>Building the future, one line at a time.</Text>
 
+          <View style={styles.infoSection}>
+            <Text style={styles.sectionTitle}>About</Text>
+            <Text style={styles.sectionText}>{profile.basicInfo || 'N/A'}</Text>
 
+            <Text style={styles.sectionTitle}>Website</Text>
+            <Text style={styles.sectionText}>{profile.website || 'N/A'}</Text>
 
+            <Text style={styles.sectionTitle}>Location</Text>
+            <Text style={styles.sectionText}>{profile.locations || 'N/A'}</Text>
 
+            <Text style={styles.sectionTitle}>Established Year</Text>
+            <Text style={styles.sectionText}>{profile.startYear || 'N/A'}</Text>
 
+            <Text style={styles.sectionTitle}>Employee Count</Text>
+            <Text style={styles.sectionText}>{profile.employeeCount || 'N/A'}</Text>
+          </View>
+
+          {/* Edit Button */}
+          <Pressable
+            style={styles.editBtn}
+            onPress={() => navigation.navigate("Profile edit")}
+          >
+            <Feather name="edit" size={18} color="#0a66c2" />
+            <Text style={styles.editText}>Edit Profile</Text>
+          </Pressable>
+        </View>
       </ScrollView>
-
     </SafeAreaView>
-  )
-}
-const styles = StyleSheet.create({
-  container: { padding: 20 },
-  title: { fontSize: 20, fontWeight: 'bold', marginBottom: 10 },
- 
-  logo: {
-    height: 60,
-    width: 60,
-    resizeMode: 'contain',
-  },
-  subheading: {
-    fontWeight: 'bold',
-    marginTop: 10
-  },
-  editContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between'
-  },
-  whiteContainer: {
-    height:110,
-    width:110,
-    position: 'absolute',
-    justifyContent:'center',
-    alignItems:'center',
-    top: 50,
-    left:50,
-    alignSelf: 'center',
-   backgroundColor: '#d5e1f2',
-    borderRadius: 60,
-    padding: 5,
-    elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-  },
+  );
+};
 
-})
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  scroll: {
+    paddingBottom: 40,
+  },
+  banner: {
+    backgroundColor: '#0a66c2',
+    height: 130,
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+    paddingBottom: 10,
+  },
+  avatarContainer: {
+    backgroundColor: '#d5e1f2',
+    borderRadius: 60,
+    width: 110,
+    height: 110,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 30,
+    position: 'absolute',
+    top: 50,
+    zIndex: 1,
+  },
+  content: {
+    marginTop: 70,
+    paddingHorizontal: 20,
+  },
+  name: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    color: '#333',
+  },
+  subtitle: {
+    fontSize: 14,
+    textAlign: 'center',
+    color: '#666',
+    marginBottom: 20,
+  },
+  infoSection: {
+    backgroundColor: '#f5f5f5',
+    padding: 15,
+    borderRadius: 10,
+    marginTop: 10,
+  },
+  sectionTitle: {
+    fontWeight: 'bold',
+    fontSize:16,
+    color: '#444',
+    marginTop: 10,
+  },
+  sectionText: {
+    color: '#333',
+    fontSize: 14,
+    marginTop: 2,
+  },
+  editBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-end',
+    marginTop: 20,
+  },
+  editText: {
+    marginLeft: 6,
+    color: '#0a66c2',
+    fontWeight: '600',
+  },
+  centered: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
+
 export default CompanyProfile

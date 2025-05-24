@@ -92,7 +92,7 @@ const JobSeekerStack=()=>{
 }
 const CompanyStack=()=>{
   return (
-  <Stack.Navigator initialRouteName='CompanyDashboard' screenOptions={{headerShown:false}}>
+  <Stack.Navigator initialRouteName='CompanyLogin' screenOptions={{headerShown:false}}>
     <Stack.Screen name='Company Details' component={CompanyDetails}/>
      <Stack.Screen name="CompanyLogin" component={CompanyLogin}/>
      <Stack.Screen name="CompanySignUp" component={CompanySignUp}/>
@@ -108,7 +108,7 @@ const CompanyStack=()=>{
 export default function App() {
   return (
    <NavigationContainer>
-    <Stack.Navigator initialRouteName='CompanyStack' >
+    <Stack.Navigator initialRouteName='JobSeekerStack' >
       <Stack.Screen name="Role" component={RoleSelectionScreen}/>
       <Stack.Screen name="JobSeekerStack" component={JobSeekerStack} options={{headerShown:false}}/>
       <Stack.Screen name="CompanyStack" component={CompanyStack} options={{headerShown:false}}/>

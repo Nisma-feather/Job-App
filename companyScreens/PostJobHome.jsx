@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useLayoutEffect, useState } from 'react'
 import { TouchableOpacity, ScrollView, SafeAreaView,Image, View, Text, StyleSheet, FlatList, Pressable, Alert } from 'react-native'
 import { Ionicons, Feather, Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
 import { auth, db } from '../firebaseConfig';
@@ -64,6 +64,7 @@ const PostJobHome = ({navigation}) => {
        
         
     }
+
     useEffect(() => {
         fetchPostedJobs()
     }, [])
@@ -71,12 +72,20 @@ const PostJobHome = ({navigation}) => {
     console.log(postedjobs)
     return (
         <SafeAreaView style={styles.container}>
-            <ScrollView style={{ padding: 15 }}>
+            <ScrollView style={{ padding: 15}}>
+            <View style={{justifyContent: 'center', alignItems: 'center', flex: 1}}>
+  <Image 
+    source={{ uri:"https://img.freepik.com/free-vector/man-search-hiring-job-online-from-laptop_1150-52728.jpg?ga=GA1.1.1173248622.1748059737&semt=ais_hybrid&w=740"}} 
+    style={{ height: 250, width: 250 }} 
+    resizeMode="cover" 
+  />
+</View>
                 <TouchableOpacity style={styles.button} onPress={()=>navigation.navigate("Post Job")}>
                     <Text style={styles.buttonText}>
                         Post New Job
                     </Text>
                 </TouchableOpacity>
+                
                 <View>
                     <Text style={styles.heading}>
                         Recently Posted Job
@@ -143,8 +152,10 @@ const styles = StyleSheet.create({
     },
     heading: {
         fontWeight: 'bold',
-        fontSize: 14,
+        fontSize: 16,
+        color:"#333",
         marginVertical: 10,
+        marginTop:15
     },
     jobCard: {
         // backgroundColor: '#e6eefa',

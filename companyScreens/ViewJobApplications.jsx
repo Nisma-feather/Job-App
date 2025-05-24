@@ -105,6 +105,9 @@ const ApplicationsList = ({ route }) => {
    const { JobId } = route.params;
   const [modalVisible,setModalVisible]=useState(false);
   const [applications, setApplications] = useState([]);
+  
+  const [disableBtn,setDisableBtn]=useState(false);
+
   const [status,setStatus]=useState("");
   const [message,setMessage]=useState("");
   const [jobData,setJobData]=useState("");
@@ -154,6 +157,7 @@ const ApplicationsList = ({ route }) => {
       setStatus('');
       setModalVisible(false);
       fetchApplications();
+     
       console.log("status updated successfully")
     }
    catch(e){
@@ -189,7 +193,7 @@ console.log(applications)
       >
         <Text style={styles.buttonText}>View Full Profile</Text>
       </TouchableOpacity>
-      <TouchableOpacity  style={styles.button} onPress={()=>{setModalVisible(true),setCurrentApplication(item)}}> <Text style={styles.buttonText}>Update Status</Text></TouchableOpacity>
+      <TouchableOpacity  style={[styles.button,item.status === "shortlisted" && styles.shortlistBackground, item.status === "notShortlisted" && styles.notShortlistBackground]} onPress={()=>{setModalVisible(true),setCurrentApplication(item)}} disabled={item.status === "shortlisted" || item.status === "notShortlisted"}> <Text style={styles.buttonText}>{item.status==="shortlisted"?"Shortlisted":item.status==="notShortlisted"?"Not Shortlisted":"Update Status"}</Text></TouchableOpacity>
     </View>
   );
 console.log(message)
@@ -216,7 +220,7 @@ console.log(message)
 
             <TouchableOpacity style={[styles.optionButton, status === 'notShortlisted' && styles.selected]} onPress={() =>{ 
               setMessage(rejectionMSg)
-              setStatus("Not Shortlisted")}}>
+              setStatus("notShortlisted")}}>
               <Text style={styles.modalButtonText}>Rejected</Text>
             </TouchableOpacity>
           </View>
@@ -271,6 +275,12 @@ heading: {
     fontWeight: 'bold',
     fontSize: 14,
     marginVertical: 10,
+},
+shortlistBackground:{
+ backgroundColor:"#59CE8F"
+},
+notShortlistBackground:{
+backgroundColor:'#FF6464'
 },
 jobCard: {
     // backgroundColor: '#e6eefa',

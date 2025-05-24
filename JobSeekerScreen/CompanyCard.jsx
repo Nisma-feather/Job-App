@@ -154,6 +154,7 @@ const CompanyCard = ({ route, navigation }) => {
     }
   };
 
+
   const handlePostReview = async () => {
     if (review.star === 0) {
       Alert.alert("Error", "Please select a star rating");
@@ -167,9 +168,10 @@ const CompanyCard = ({ route, navigation }) => {
        reviewedAt: Timestamp.now() // Use Firestore Timestamp, not new Date()
      };
      const updatedReview =[...exsistingReviews,newReview]
-     console.log(updatedReview)
+     const newSum=updatedReview.reduce((acc, review) => acc + review.star, 0);
+     const newAvg=newSum/updatedReview.length;
       
-      await updateDoc(doc(db, 'companies', companyUID), { reviews: updatedReview });
+      await updateDoc(doc(db, 'companies', companyUID), { reviews: updatedReview, reviewAvg:Math.round(newAvg)});
       
       // Refresh data
       await fetchCompanyDetails();

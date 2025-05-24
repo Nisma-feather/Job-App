@@ -47,11 +47,11 @@ const HomeScreen = ({ navigation }) => {
             exp === 'Mid Level' ? '2-5 Years' :
               'More than 5 Years';
     }
-
+    console.log(newRecommend)
     return newRecommend;
   };
 
-  const fetchRecommendJobs = async (recommendData) => {
+  const fetchRecommendJobs = async (recommendData,userData) => {
     try {
       const jobRef = collection(db, 'jobs');
       const queryConditions = [];
@@ -73,9 +73,12 @@ const HomeScreen = ({ navigation }) => {
         const querySnapshot = await getDocs(q);
         jobs = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       }
+      console.log(jobs);
 
-      if (jobs.length === 0 && userData.skills?.length > 0) {
+      if (jobs.length === 0) {
+        console.log("No recommendations foundso fetching skill based job",userData.skills)
         const skillJobs = await fetchSkillBasedJobs(userData.skills, recommendData);
+        console.log(skillJobs)
         jobs = [...jobs, ...skillJobs];
       }
 
@@ -89,14 +92,13 @@ const HomeScreen = ({ navigation }) => {
   const fetchSkillBasedJobs = async (skills, recommendData) => {
     try {
       if (!skills || skills.length === 0) return [];
-
       const conditions = [
         where('skillsRequired', 'array-contains-any', skills)
       ];
 
-      if (recommendData?.experienceLevel) {
-        conditions.push(where('expYear', '==', recommendData.experienceLevel));
-      }
+      // if (recommendData?.experienceLevel) {
+      //   conditions.push(where('expYear', '==', recommendData.experienceLevel));
+      // }
 
       const q = query(collection(db, 'jobs'), ...conditions);
       const querySnapshot = await getDocs(q);
@@ -108,15 +110,16 @@ const HomeScreen = ({ navigation }) => {
     }
   };
   console.log(jobsForYou)
+  console.log(jobs)
   useEffect(() => {
     const fetchData = async () => {
       if (uid) {
         try {
           setLoading(true);
           const userData = await fetchUserData();
+     
           const updatedRecommend = format(userData?.userInterest || {});
-          const jobs = await fetchRecommendJobs(updatedRecommend);
-
+          const jobs = await fetchRecommendJobs(updatedRecommend, userData);
           setUserData(userData || {});
           setRecommend(updatedRecommend);
           setJobs(jobs);
@@ -154,7 +157,8 @@ const HomeScreen = ({ navigation }) => {
       </View>
     );
   }
-  console.log(recommend)
+console.log(recommend);
+
   return (
     <ScrollView style={{ flex: 1, backgroundColor: '#fff' }}>
       {/* Top Bar */}

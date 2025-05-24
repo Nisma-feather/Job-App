@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, Image, Pressable, StyleSheet } from 'react-native';
-import { Ionicons, Entypo, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Ionicons, Entypo,FontAwesome, MaterialCommunityIcons,AntDesign } from '@expo/vector-icons';
 import { auth, db } from '../firebaseConfig'; // Adjust the path as needed
 import {
-  collection, query, where, getDocs, addDoc, deleteDoc, doc
+  collection, query, where, getDocs, addDoc, deleteDoc, doc,
+  getDoc
 } from 'firebase/firestore';
 import { useNavigation } from '@react-navigation/native';
 
@@ -12,6 +13,7 @@ const dummyimg = require('../assets/logo.png'); // Replace with actual image pat
 const JobCard = ({ item }) => {
   console.log(item)
   const navigation = useNavigation();
+  const [reviewAvg,setReviewAvg]=useState(0);
   const [bookmarkJobs, setBookmarkJobs] = useState([]);
   const uid = auth.currentUser?.uid;
 
@@ -25,6 +27,12 @@ const JobCard = ({ item }) => {
       console.error("Failed to fetch bookmarks:", e);
     }
   };
+  const fetchReviews=async()=>{
+    const snapData=await getDoc(doc(db,'companies',item.companyUID));
+    console.log(snapData.data());
+    setReviewAvg(snapData.data()?.reviewAvg);
+
+  }
 
   const handletoggleBookmark = async (jobId) => {
     try {
@@ -72,8 +80,9 @@ const JobCard = ({ item }) => {
   }
   useEffect(() => {
     fetchBookMarks();
+    fetchReviews();
   }, []);
-
+console.log(reviewAvg)
   return (
     <Pressable onPress={() => navigation.navigate("Job Details", { currentJob: item })}>
       <View style={styles.jobItem}>
@@ -86,7 +95,14 @@ const JobCard = ({ item }) => {
          
           <View style={{justifyContent:'space-between'}}>
             <Text style={styles.jobTitle}>{item.jobrole}</Text>
+            <View style={{flexDirection:'row',gap:5}}>
             <Text style={styles.companyName}>{item.companyName}</Text>
+            
+            <FontAwesome style={{marginTop:2}} name="star"  color="#FFD700"  size={14} />
+            <Text style={{fontSize:12,fontWeight:'500',color:"#777"}}>{reviewAvg}.0 Review</Text>
+
+            </View>
+            
 
           </View>
 
@@ -124,7 +140,7 @@ const JobCard = ({ item }) => {
 
 const styles = StyleSheet.create({
   jobItem: {
-
+    minWidth:250,
     padding: 10,
     borderRadius: 6,
     backgroundColor: '#fff',
@@ -154,7 +170,9 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: '#666',
     color:"#5c88ea",
+    fontWeight:'500',
     marginBottom: 4,
+    marginRight:15,
   },
   metaRow: {
     flexDirection: 'row',

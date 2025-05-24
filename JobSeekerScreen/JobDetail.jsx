@@ -123,8 +123,10 @@ const JobDetail = ({ route,navigation }) => {
         ...review // Use Firestore Timestamp, not new Date()
       };
       const updatedReview =[...exsistingReviews,newReview]
+      const newSum=updatedReview.reduce((acc, review) => acc + review.star, 0);
+      const newAvg=newSum/updatedReview.length;
 
-      await updateDoc(doc(db, 'companies', currentJob.companyUID), { reviews: updatedReview });
+      await updateDoc(doc(db, 'companies', currentJob.companyUID), { reviews: updatedReview,reviewAvg:Math.round(newAvg)});
       
       // Refresh data
       await fetchCompany();
@@ -252,7 +254,7 @@ const JobDetail = ({ route,navigation }) => {
                         <View style={styles.ratingOverview}>
                           <View style={{flexDirection:'row',alignItems:'center'}}>
                          
-                          <Text style={styles.ratingOutOf}> <Text style={styles.averageRating}>{ratingStats.average}</Text>/5</Text>
+                          <Text style={styles.ratingOutOf}> <Text style={styles.averageRating}>{Math.round(ratingStats.average)}</Text>/5</Text>
                           
           
           <AnimatedCircularProgress
